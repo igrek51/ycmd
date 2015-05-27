@@ -67,12 +67,19 @@ bool exec_commands(vector<string> *args){
     }else if(next_element("-y",args,next)||next_element("--ymake",args,next)){ //skompiluj
         if(!ymake(dir_format(args->at(next))))
             return false;
-    }else if(next_element("--generate",args,next)){ //generuj plik .bat
+    }else if(next_element("--ymake-bat",args,next)){ //generuj plik .bat
         if((int)args->size()<=next+1){
-            cout<<"[!] BLAD: za malo parametrow polecenia --generate"<<endl;
+            cout<<"[!] BLAD: oczekiwano 2 parametrow polecenia"<<endl;
             return false;
         }
-        if(!ymake_generate(dir_format(args->at(next)),dir_format(args->at(next+1))))
+        if(!ymake_generate_bat(dir_format(args->at(next)),dir_format(args->at(next+1))))
+            return false;
+    }else if(next_element("--ymake-makefile",args,next)){ //generuj plik makefile
+        if((int)args->size()<=next+1){
+            cout<<"[!] BLAD: oczekiwano 2 parametrow polecenia"<<endl;
+            return false;
+        }
+        if(!ymake_generate_makefile(dir_format(args->at(next)),dir_format(args->at(next+1))))
             return false;
     }else if(next_element("--run",args,next)){ //uruchom aplikację z ymake
         if(!run_ymake(dir_format(args->at(next)),false)){

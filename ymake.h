@@ -15,7 +15,8 @@ vector<string>* get_from_list(string list);
 vector<string>* get_from_list_ex(string list, string dir);
 
 bool ymake(string ymake_filename);
-bool ymake_generate(string ymake_filename, string output_filename);
+bool ymake_generate_bat(string ymake_filename, string output_filename);
+bool ymake_generate_makefile(string ymake_filename, string output_filename);
 bool run_ymake(string ymake_filename, bool start);
 
 #endif // YMAKE_H
