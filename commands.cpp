@@ -11,6 +11,8 @@
 
 bool exec_commands(vector<string> *args){
     int next;
+    string next_text1;
+    string next_text2;
     //zmiana katalogu roboczego
     if(next_element("-w",args,next)||next_element("--workdir",args,next)){
         if(!set_workdir(dir_format(args->at(next)))){
@@ -64,39 +66,31 @@ bool exec_commands(vector<string> *args){
         delete linie;
     }else if(next_element("-t",args,next)||next_element("--time",args,next)){ //zmierz czas wykonania
         return count_time(args->at(next));
-    }else if(next_element("-y",args,next)||next_element("--ymake",args,next)){ //skompiluj
-        if(!ymake(dir_format(args->at(next))))
+    }else if(next_element_default("-y", args, next_text1, "ymake") || next_element_default("--ymake", args, next_text1, "ymake")){ //skompiluj
+        if(!ymake(dir_format(next_text1)))
             return false;
-    }else if(next_element("--ymake-bat",args,next)){ //generuj plik .bat
-        if((int)args->size()<=next+1){
-            cout<<"[!] BLAD: oczekiwano 2 parametrow polecenia"<<endl;
+    }else if(next_element_default2("--ymake-bat", args, next_text1, "ymake", next_text2, "build.bat")){ //generuj plik .bat
+        if(!ymake_generate_bat(dir_format(next_text1), dir_format(next_text2)))
             return false;
-        }
-        if(!ymake_generate_bat(dir_format(args->at(next)),dir_format(args->at(next+1))))
+    }else if(next_element_default2("--ymake-makefile", args, next_text1, "ymake", next_text2, "Makefile")){ //generuj plik makefile
+        if(!ymake_generate_makefile(dir_format(next_text1), dir_format(next_text2)))
             return false;
-    }else if(next_element("--ymake-makefile",args,next)){ //generuj plik makefile
-        if((int)args->size()<=next+1){
-            cout<<"[!] BLAD: oczekiwano 2 parametrow polecenia"<<endl;
-            return false;
-        }
-        if(!ymake_generate_makefile(dir_format(args->at(next)),dir_format(args->at(next+1))))
-            return false;
-    }else if(next_element("--run",args,next)){ //uruchom aplikację z ymake
-        if(!run_ymake(dir_format(args->at(next)),false)){
-            cout<<"[!] BLAD: blad uruchamiania z pliku: "<<args->at(next)<<endl;
+    }else if(next_element_default("--run", args, next_text1, "ymake")){ //uruchom aplikację z ymake
+        if(!run_ymake(dir_format(next_text1), false)){
+            cout<<"[!] BLAD: blad uruchamiania z pliku: "<<next_text1<<endl;
             return false;
         }
-    }else if(next_element("--run-start",args,next)){ //uruchom aplikację z ymake (z poleceniem start)
-        if(!run_ymake(dir_format(args->at(next)),true)){
-            cout<<"[!] BLAD: blad uruchamiania z pliku: "<<args->at(next)<<endl;
+    }else if(next_element_default("--run-start", args, next_text1, "ymake")){ //uruchom aplikację z ymake (z poleceniem start)
+        if(!run_ymake(dir_format(next_text1),true)){
+            cout<<"[!] BLAD: blad uruchamiania z pliku: "<<next_text1<<endl;
             return false;
         }
     }else if(is_arg("-i",args)||is_arg("--input",args)){ //czekaj na wpisanie z klawiatury
         return input_cmd();
     }else if(is_arg("--clean",args)){ //wyczysc folder prv
         return clean_all();
-    }else if(next_element("--version++",args,next)){ //zwiększ wersję w pliku
-        return version_inc(dir_format(args->at(next)));
+    }else if(next_element_default("--version++", args, next_text1, "version.h")){ //zwiększ wersję w pliku
+        return version_inc(dir_format(next_text1));
     }else{
         cout<<"[!] BLAD: brak poprawnego polecenia"<<endl;
         return false;

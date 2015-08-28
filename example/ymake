@@ -1,0 +1,56 @@
+//ymake v1.4.4
+COMPILER=
+g++
+
+COMPILER_PATH=
+C:\MinGW\bin
+
+//folder plików Ÿród³owych i headers
+//puste = katalog roboczy
+SRC_PATH=
+
+
+//format: lista plików oddzielona spacj¹,
+//*.cpp - dodaje wszystkie pliki o podanym rozszerzeniu
+//-plik - odejmuje z listy wybrany plik
+//po³o¿enie plików w SRC_PATH
+SRC=
+*.cpp
+
+//dodatkowe pliki porojektu, zapisywanie kopii
+//przy wykrytej zmianie pliku - przebudowanie projektu
+//po³o¿enie plików w SRC_PATH
+//format: lista plików oddzielona spacj¹,
+//*.cpp - dodaje wszystkie pliki o podanym rozszerzeniu
+//-plik - odejmuje z listy wybrany plik
+//puste = brak plików
+HEADERS=
+*.h -version.h
+
+//nazwa aplikacji tworzona w folderze bin
+OUTPUT=
+SongBook_Editor.exe
+
+//biblioteki do³¹czane jako flagi linkera
+LIBS=
+
+//flagi kompilatora
+COMPILER_FLAGS=
+-Wall
+
+//flagi linkera
+LINKER_FLAGS=
+-Wall -mwindows -s
+
+//plik zasobów do³¹czany do aplikacji
+//puste = brak do³¹czania zasobów
+RESOURCE=
+resource.rc
+
+//plik do inkrementacji wersji
+//po³o¿enie pliku w SRC_PATH
+//puste = brak inkrementacji wersji
+//zwiêkszany tylko w przypadku zmian - wprowadzany tylko w przebudowywaniu
+//zwiêkszony po przebudowaniu (przechowuje nastêpny numer wersji)
+VERSION_FILE=
+version.h

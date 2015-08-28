@@ -1,0 +1,33 @@
+//ymake v1.4.4
+COMPILER=
+g++
+
+COMPILER_PATH=
+C:\MinGW\bin
+
+SRC_PATH=
+
+
+SRC=
+*.cpp
+
+HEADERS=
+*.h -version.h
+
+OUTPUT=
+ycmd.exe
+
+LIBS=
+
+
+COMPILER_FLAGS=
+-Wall
+
+LINKER_FLAGS=
+-Wall -s
+
+RESOURCE=
+
+
+VERSION_FILE=
+version.h
