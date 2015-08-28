@@ -65,6 +65,6 @@ bool version_inc(string filename){
     plik<<"#define VERSION \""<<v1<<"."<<v2<<"."<<v3<<"\""<<endl<<endl;
     plik<<"#endif"<<endl;
     plik.close();
-    cout<<"Zwiekszono numer wersji na: "<<v1<<"."<<v2<<"."<<v3<<endl;
+    cout<<"Zwiekszono numer kolejnej wersji na: "<<v1<<"."<<v2<<"."<<v3<<endl;
     return true;
 }

@@ -22,7 +22,7 @@ void show_help(){
     cout<<"ycmd --clean - wyczysc folder prv\\"<<endl;
     cout<<"ycmd --run [ymake] - uruchom z pliku ymake"<<endl;
     cout<<"ycmd --run-start [ymake] - uruchom poleceniem start z pliku ymake"<<endl;
-    cout<<"ycmd --version++ [version.h] - zwiększ numer wersji w pliku"<<endl;
+    cout<<"ycmd --version++ [version.h] - zwieksz numer wersji w pliku"<<endl;
     cout<<"Opcjonalne parametry:"<<endl;
     cout<<"-w(--workdir) [dir] - zmien katalog roboczy"<<endl;
     cout<<"--setenv [var] [value] - zmien zmienna srodowiskowa"<<endl;
