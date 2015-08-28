@@ -27,9 +27,9 @@ int main(int argc, char **argv){
     if(Flags::error && (is_arg("--pe", args) || is_arg("-pe", args))) Flags::pause = true;
     if(Flags::pause || Flags::verbose){
         if(Flags::error){
-			cout<<"Program zakonczony bledem...";
+			IO::echo("Program zakonczony bledem...");
 		}else{
-			cout<<"Pomyslnie zakonczono program...";
+			IO::echo("Pomyslnie zakonczono program...");
 		}
         if(Flags::pause) getch();
 	}

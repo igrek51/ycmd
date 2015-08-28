@@ -1,5 +1,6 @@
 #include "variables.h"
 #include "files.h"
+#include "io.h"
 
 #include <cstdlib>
 
@@ -54,7 +55,7 @@ string get_var_string(vector<Variable*>* variables, string name){
             return variables->at(i)->value;
         }
     }
-    cout<<"[BLAD!] Nie znaleziono zmiennej: "<<name<<endl;
+    IO::error("Nie znaleziono zmiennej: "+name);
     return "";
 }
 

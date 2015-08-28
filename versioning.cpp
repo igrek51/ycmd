@@ -1,5 +1,6 @@
 #include "versioning.h"
 #include "files.h"
+#include "io.h"
 
 #include <fstream>
 #include <sstream>
@@ -7,31 +8,44 @@
 
 bool version_get(string filename, int &v1, int &v2, int &v3){
     if(!file_exists(filename)){
-        cout<<"[!] BLAD: nie istnieje plik wersji: "<<filename<<endl;
+        IO::error("nie istnieje plik wersji: "+filename);
         return false;
     }
     vector<string> *lines = get_nonempty_lines(filename);
     unsigned int liniav;
-    stringstream ss;
+    string pattern = "#define VERSION \"";
     for(liniav=0; liniav<=lines->size(); liniav++){
         if(liniav==lines->size()){
-            cout<<"[!] BLAD: brak linii z numerem wersji"<<endl;
+            IO::error("brak linii z numerem wersji");
+            delete lines;
             return false;
         }
-        //szukanie formatu //v 1 2 13
-        if(lines->at(liniav).length()<8)
-            continue;
-        if(lines->at(liniav)[0]=='/' && lines->at(liniav)[1]=='/' && lines->at(liniav)[2]=='v') break;
+        //szukanie odpowiedniego formatu
+        if(lines->at(liniav).length() < pattern.length()+6) continue;
+        if(lines->at(liniav).substr(0, pattern.length()) == pattern) break;
     }
-    ss<<lines->at(liniav);
-    char buf[5];
-    buf[4] = 0;
-    ss.read(buf,4);
-    if(strcmp(buf,"//v ")!=0){
-        cout<<"[!] BLAD: blad formatu danych w pliku wersji"<<endl;
+    stringstream ss;
+    ss<<lines->at(liniav).substr(pattern.length());
+    delete lines;
+    ss>>v1;
+    char bufor;
+    ss.read(&bufor, 1);
+    if(bufor!='.'){
+        IO::error("blad formatu danych w pliku wersji");
         return false;
     }
-    ss.str(ss.str().substr(4,ss.str().length()-4));
+    ss>>v2;
+    ss.read(&bufor, 1);
+    if(bufor!='.'){
+        IO::error("blad formatu danych w pliku wersji");
+        return false;
+    }
+    ss>>v3;
+    ss.read(&bufor, 1);
+    if(bufor!='\"'){
+        IO::error("blad formatu danych w pliku wersji");
+        return false;
+    }
     ss>>v1>>v2>>v3;
     return true;
 }
@@ -55,16 +69,17 @@ bool version_inc(string filename){
     fstream plik;
     plik.open(filename.c_str(),fstream::out|fstream::binary);
     if(!plik.good()){
-        cout<<"[!] BLAD: blad zapisu do pliku: "<<filename<<endl;
+        IO::error("blad zapisu do pliku: "+filename);
         return false;
     }
-    plik<<"//v "<<v1<<" "<<v2<<" "<<v3<<endl;
-    plik<<"// -- "<<get_time_date()<<" --"<<endl;
+    plik<<"// -- "<<get_time_date()<<" -- (ymake v"<<Flags::version<<") --"<<endl;
     plik<<"#ifndef VERSION_H"<<endl;
     plik<<"#define VERSION_H"<<endl<<endl;
     plik<<"#define VERSION \""<<v1<<"."<<v2<<"."<<v3<<"\""<<endl<<endl;
     plik<<"#endif"<<endl;
     plik.close();
-    cout<<"Zwiekszono numer kolejnej wersji na: "<<v1<<"."<<v2<<"."<<v3<<endl;
+    stringstream ss;
+    ss<<"Zwiekszono numer kolejnej wersji na: "<<v1<<"."<<v2<<"."<<v3;
+    IO::echo(ss.str());
     return true;
 }

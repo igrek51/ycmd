@@ -12,25 +12,19 @@ bool exec_commands(vector<string> *args){
     //zmiana katalogu roboczego
     if(next_arg("-w", args, next1) || next_arg("--workdir", args, next1)){
         if(!set_workdir(next1)){
-            cout<<"[!] BLAD: nieprawidlowa sciezka \""<<next1<<"\""<<endl;
+            IO::error("nieprawidlowa sciezka \""+next1+"\"");
             return false;
         }
     }
     if(next_arg("--setenv", args, next1, next2)){ //zmienna œrodowiskowa
-        if(!set_env(next1, next2)){
-            cout<<"[!] BLAD: blad zmiany zmiennej srodowiskowej"<<endl;
-            return false;
-        }
+        return set_env(next1, next2);
     }
     if(next_arg("--setpath", args, next1)){ //zmienna œrodowiskowa PATH
-        if(!set_env("PATH", next1)){
-            cout<<"[!] BLAD: blad zmiany zmiennej srodowiskowej"<<endl;
-            return false;
-        }
+        return set_env("PATH", next1);
     }
     if(next_arg("--addpath", args, next1)){ //zmienna œrodowiskowa PATH
         if(!add_path(next1)){
-            cout<<"[!] BLAD: blad dodawania do zmiennej srodowiskowej PATH"<<endl;
+            IO::error("blad dodawania do zmiennej srodowiskowej PATH");
             return false;
         }
     }
@@ -43,10 +37,11 @@ bool exec_commands(vector<string> *args){
     }else if(next_arg("-e1", args, next1)){ //wykonaj 1 polecenie
         return system2(next1);
     }else if(next_arg("-f", args, next1) || next_arg("--file", args, next1)){ //wykonaj wiersze z pliku
-        if(Flags::verbose) cout<<"Wykonywanie zawartosci pliku \""<<next1<<"\":"<<endl;
+        if(Flags::verbose)
+            IO::echo("Wykonywanie zawartosci pliku \""+next1+"\":");
         vector<string> *linie = get_nonempty_lines(next1);
         if(linie==NULL){
-            cout<<"[!] BLAD: brak pliku \""<<next1<<"\""<<endl;
+            IO::error("brak pliku \""+next1+"\"");
             delete linie;
             return false;
         }
@@ -70,17 +65,17 @@ bool exec_commands(vector<string> *args){
             return false;
     }else if(next_arg_default("--run", args, next1, "ymake")){ //uruchom aplikacjê z ymake
         if(!run_ymake(next1, 1)){
-            cout<<"[!] BLAD: blad uruchamiania z pliku: "<<next1<<endl;
+            IO::error("blad uruchamiania z pliku: "+next1);
             return false;
         }
     }else if(next_arg_default("--run-start", args, next1, "ymake")){ //uruchom aplikacjê z ymake (z poleceniem start)
         if(!run_ymake(next1, 2)){
-            cout<<"[!] BLAD: blad uruchamiania z pliku: "<<next1<<endl;
+            IO::error("blad uruchamiania z pliku: "+next1);
             return false;
         }
     }else if(next_arg_default("--run-shellexec", args, next1, "ymake")){ //uruchom aplikacjê przez shellexecute
         if(!run_ymake(next1, 3)){
-            cout<<"[!] BLAD: blad uruchamiania z pliku: "<<next1<<endl;
+            IO::error("blad uruchamiania z pliku: "+next1);
             return false;
         }
     }else if(is_arg("-i", args) || is_arg("--input", args)){ //czekaj na wpisanie z klawiatury
@@ -89,8 +84,17 @@ bool exec_commands(vector<string> *args){
         return clean_all();
     }else if(next_arg_default("--version++", args, next1, "version.h")){ //zwiêksz wersjê w pliku
         return version_inc(dir_format(next1));
+    }else if(is_arg("--test", args)){
+
+        int v1, v2, v3;
+        bool result = version_get("../version.h", v1, v2, v3);
+        cout<<"result: "<<result<<endl;
+        cout<<"v1: "<<v1<<endl;
+        cout<<"v2: "<<v2<<endl;
+        cout<<"v3: "<<v3<<endl;
+
     }else{
-        cout<<"[!] BLAD: brak poprawnego polecenia"<<endl;
+        IO::error("brak poprawnego polecenia");
         return false;
     }
     return true;

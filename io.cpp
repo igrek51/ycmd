@@ -4,6 +4,27 @@
 
 #include <conio.h>
 
+IO* IO::instance = NULL;
+
+IO* IO::i(){
+    if(instance == NULL){
+        instance = new IO();
+    }
+    return instance;
+}
+
+void IO::echo(string s){
+    cout<<s<<endl;
+}
+
+void IO::error(string s){
+    echo("[BLAD!] - "+s);
+}
+
+void IO::info(string s){
+    echo("[info] - "+s);
+}
+
 bool Flags::verbose = false;
 bool Flags::pause = false;
 bool Flags::error = false;
@@ -41,7 +62,7 @@ bool next_arg(string szukany, vector<string>* args, string &next_text){
                 next_text = args->at(i+1);
                 return true;
             }else{
-                cout<<"[BLAD!] brak parametru po "<<szukany<<endl;
+                IO::error("brak parametru po "+szukany);
                 Flags::error = true;
                 return false; //nie istnieje nastêpny
             }
@@ -58,7 +79,7 @@ bool next_arg(string szukany, vector<string>* args, string &next_text1, string &
                 next_text2 = args->at(i+2);
                 return true;
             }else{
-                cout<<"[BLAD!] brak 2 parametrow po "<<szukany<<endl;
+                IO::error("brak 2 parametrow po "+szukany);
                 Flags::error = true;
                 return false; //nie istniej¹ oba
             }
@@ -74,7 +95,7 @@ bool next_arg_default(string szukany, vector<string>* args, string &next_text, s
                 next_text = args->at(i+1);
             }else{ //nie istnieje nastêpny
                 next_text = domyslny;
-                cout<<"Domyslna wartosc 1. parametru po \""<<szukany<<"\": "<<domyslny<<endl;
+                IO::info("Domyslna wartosc 1. parametru po \""+szukany+"\": "+domyslny);
             }
             return true;
         }
@@ -91,12 +112,12 @@ bool next_arg_default(string szukany, vector<string>* args, string &next_text1, 
             }else if(i+1 < args->size()){ //istnieje 1 nastêpny element
                 next_text1 = args->at(i+1);
                 next_text2 = domyslny2;
-                cout<<"Domyslna wartosc 2. parametru po \""<<szukany<<"\": "<<domyslny2<<endl;
+                IO::info("Domyslna wartosc 2. parametru po \""+szukany+"\": "+domyslny2);
             }else{ //nie istnieje ¿odyn nastêpny
                 next_text1 = domyslny1;
                 next_text2 = domyslny2;
-                cout<<"Domyslna wartosc 1. parametru po \""<<szukany<<"\": "<<domyslny1<<endl;
-                cout<<"Domyslna wartosc 2. parametru po \""<<szukany<<"\": "<<domyslny2<<endl;
+                IO::info("Domyslna wartosc 1. parametru po \""+szukany+"\": "+domyslny1);
+                IO::info("Domyslna wartosc 2. parametru po \""+szukany+"\": "+domyslny2);
             }
             return true;
         }
@@ -111,7 +132,7 @@ bool next_arg_number(string szukany, vector<string>* args, int &next){
                 next = i + 1;
                 return true;
             }else{
-                cout<<"[BLAD!] brak parametru po "<<szukany<<endl;
+                IO::error("brak parametru po: "+szukany);
                 Flags::error = true;
                 return false; //nie istnieje nastêpny
             }

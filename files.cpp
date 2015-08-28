@@ -1,4 +1,5 @@
 #include "files.h"
+#include "io.h"
 
 #include <fstream>
 #include <windows.h>
@@ -126,13 +127,13 @@ vector<string>* get_files_from_dir(string dir, string ext){
     if(dir.length()==0)
         dir = ".";
     if(!dir_exists(dir)){
-        cout<<"[!] BLAD: brak folderu "<<dir<<endl;
+        IO::error("brak folderu: "+dir);
         return NULL;
     }
     WIN32_FIND_DATAA ffd;
     HANDLE hFind = FindFirstFileA((dir+"\\*").c_str(), &ffd);
     if(hFind==INVALID_HANDLE_VALUE){
-        cout<<"[!] BLAD: blad otwierania folderu "<<dir<<endl;
+        IO::error("blad otwierania folderu "+dir);
         return NULL;
     }
     vector<string>* files = new vector<string>;

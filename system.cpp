@@ -8,17 +8,17 @@
 
 bool system2(string cmd){
     if(Flags::verbose)
-        cout<<"Wykonywanie: "<<cmd<<" ..."<<endl;
+        IO::echo("Wykonywanie: "+cmd+" ...");
     if(system(cmd.c_str())==0)
         return true;
-    cout<<"[!] Blad polecenia: "<<cmd<<endl;
+    IO::error("Blad polecenia: "+cmd);
     Flags::error = true;
     return false;
 }
 
 bool set_env(string variable, string value){
     if(SetEnvironmentVariable(variable.c_str(),value.c_str())==0){
-        cout<<"[BLAD!] Blad zmiany zmiennej srodowiskowej: "<<variable<<endl;
+        IO::error("Blad zmiany zmiennej srodowiskowej: "+variable);
         return false;
     }
     return true;
@@ -39,7 +39,7 @@ bool add_path(string new_path){
 bool set_workdir(string wd){
     wd = dir_format(wd);
     if(!SetCurrentDirectory(wd.c_str())){
-        cout<<"[BLAD!] Blad zmiany katalogu roboczego: "<<wd<<endl;
+        IO::error("Blad zmiany katalogu roboczego: "+wd);
         return false;
     }
     return true;
@@ -81,16 +81,18 @@ string get_time_date(){
 }
 
 bool count_time(string exec){
-    cout<<"Start: "<<get_time()<<endl;
+    IO::echo("Start: "+get_time());
     double start_t=(double)clock();
     if(!system2(exec)){
-        cout<<"Polecenie wykonane z bledem: "<<exec<<endl;
+        IO::error("Polecenie wykonane z bledem: "+exec);
     }
     double sekundy=((double)clock()-start_t)/CLOCKS_PER_SEC;
     int minuty = ((int)sekundy)/60;
     sekundy -= minuty*60;
-    cout<<"Czas wykonania: ";
-    if(minuty>0) cout<<minuty<<" min ";
-    cout<<sekundy<<" s"<<endl;
+    stringstream ss;
+    ss<<"Czas wykonania: ";
+    if(minuty>0) ss<<minuty<<" min ";
+    ss<<sekundy<<" s";
+    IO::echo(ss.str());
     return true;
 }

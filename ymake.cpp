@@ -11,10 +11,10 @@
 
 bool ymake(string ymake_filename){
     ymake_filename = dir_format(ymake_filename);
-    cout<<"ymake v"<<Flags::version<<":"<<endl;
+    IO::echo("ymake v"+Flags::version+":");
     vector<Variable*>* variables = get_variables(ymake_filename);
     if(variables==NULL){
-        cout<<"[!] BLAD: brak poprawnego pliku \""<<ymake_filename<<"\""<<endl;
+        IO::error("brak poprawnego pliku \""+ymake_filename+"\"");
         return false;
     }
     //odczytanie z pliku parametrów
@@ -33,6 +33,17 @@ bool ymake(string ymake_filename){
         delete variables->at(i);
     }
     delete variables;
+    //walidacja wczytanych danych, wartoœci domyœlne
+    if(ymake_compiler.length()==0) ymake_compiler = "g++";
+    if(ymake_output.length()==0) ymake_output = "main.exe";
+    if(ymake_compiler_path.length()==0){
+        IO::error("Brak sciezki do kompilatora (COMPILER_PATH)");
+        return false;
+    }
+    if(ymake_src.length()==0){
+        IO::error("Brak plikow zrodlowych (SRC)");
+        return false;
+    }
     //format ymake_src_path
     if(ymake_src_path.length()>0){
         if(ymake_src_path[ymake_src_path.length()-1]!='\\') ymake_src_path+='\\';
@@ -41,7 +52,7 @@ bool ymake(string ymake_filename){
     //lista SRC
     vector<string> *srcs = get_list_ex(ymake_src, ymake_src_path);
     if(srcs->size()==0){
-        cout<<"[!] BLAD: pusta lista plikow zrodlowych"<<endl;
+        IO::error("pusta lista plikow zrodlowych");
         return false;
     }
     //lista plików headers (dodatkowych plików projektu)
@@ -56,28 +67,29 @@ bool ymake(string ymake_filename){
     bool rebuild = false, change = false;
     for(unsigned int i=0; i<headers->size(); i++){
         if(!file_exists(ymake_src_path + headers->at(i))){
-            cout<<"[!] BLAD: brak pliku "<<ymake_src_path<<headers->at(i)<<endl;
+            IO::error("brak pliku: "+ymake_src_path+headers->at(i));
             return false;
         }
         if(files_equal(ymake_src_path+headers->at(i),"prv\\"+headers->at(i)))
             continue;
         //przebudowa ca³ego projektu
-        cout<<"Zmodyfikowany plik: "<<ymake_src_path<<headers->at(i)<<endl;
+        IO::echo("Zmodyfikowany plik: "+ymake_src_path+headers->at(i));
         rebuild = true;
         change = true;
         //skopiowanie nowej wersji z nadpisaniem
         if(!copy_files(ymake_src_path+headers->at(i),"prv\\"+headers->at(i))){
-            cout<<"[!] BLAD: blad kopiowania do pliku prv\\"<<headers->at(i)<<endl;
+            IO::error("blad kopiowania do pliku prv\\"+headers->at(i));
             return false;
         }
     }
     delete headers;
-    if(rebuild)
-        cout<<"Przebudowywanie..."<<endl;
+    if(rebuild){
+        IO::echo("Przebudowywanie...");
+    }
     //znalezienie zmienionych plików cpp
     for(unsigned int i=0; i<srcs->size(); i++){
         if(!file_exists(ymake_src_path+srcs->at(i))){
-            cout<<"[!] BLAD: brak pliku zrodlowego "<<ymake_src_path<<srcs->at(i)<<endl;
+            IO::error("brak pliku zrodlowego "+ymake_src_path+srcs->at(i));
             return false;
         }
         if(!rebuild){
@@ -89,31 +101,31 @@ bool ymake(string ymake_filename){
         stringstream ss;
         ss<<ymake_compiler<<" -c -o \"obj\\"<<srcs->at(i)<<".o\" "<<ymake_src_path<<srcs->at(i);
         if(ymake_compiler_flags.length()>0) ss<<" "<<ymake_compiler_flags;
-        cout<<"Kompilacja "<<srcs->at(i)<<": "<<ss.str()<<endl;
+        IO::echo("Kompilacja "+srcs->at(i)+": "+ss.str());
         if(!system2(ss.str())){
-            cout<<"[!] BLAD: blad kompilacji pliku "<<srcs->at(i)<<endl;
+            IO::error("blad kompilacji pliku: "+srcs->at(i));
             return false;
         }
         //skopiowanie nowej wersji z nadpisaniem
         if(!copy_files(ymake_src_path+srcs->at(i),"prv\\"+srcs->at(i))){
-            cout<<"[!] BLAD: blad kopiowania do pliku prv\\"<<srcs->at(i)<<endl;
+            IO::error("blad kopiowania do pliku prv\\"+srcs->at(i));
             return false;
         }
     }
     //Zasoby
     if(ymake_resource.length()>0){
         if(!file_exists(ymake_resource)){
-            cout<<"[!] BLAD: brak pliku zasobow "<<ymake_resource<<endl;
+            IO::error("brak pliku zasobow: "+ymake_resource);
             return false;
         }
         //sprawdzenie starej wersji
         if(!files_equal(ymake_resource,"prv\\"+ymake_resource) || !file_exists("obj\\"+ymake_resource+".o")){
             change = true;
-            cout<<"Dodawanie zasobow: "<<ymake_resource<<endl;
+            IO::echo("Dodawanie zasobow: "+ymake_resource);
             if(!system2("windres "+ymake_resource+" \"obj\\"+ymake_resource+".o\""))
                 return false;
             if(!copy_files(ymake_resource,"prv\\"+ymake_resource)){
-                cout<<"[!] BLAD: blad kopiowania do pliku prv\\"<<ymake_resource<<endl;
+                IO::error("blad kopiowania do pliku prv\\"+ymake_resource);
                 return false;
             }
         }
@@ -122,7 +134,7 @@ bool ymake(string ymake_filename){
     if(change || rebuild){
         if(ymake_version_file.length()>0){
             if(!version_inc(dir_format(ymake_version_file))){
-                cout<<"[!] BLAD: blad inkrementacji wersji w pliku: "<<ymake_version_file<<endl;
+                IO::error("blad inkrementacji wersji w pliku: "+ymake_version_file);
                 return false;
             }
         }
@@ -135,13 +147,13 @@ bool ymake(string ymake_filename){
         if(ymake_resource.length()>0) ss2<<" \"obj\\"<<ymake_resource<<".o\"";
         if(ymake_libs.length()>0) ss2<<" "<<ymake_libs;
         if(ymake_linker_flags.length()>0) ss2<<" "<<ymake_linker_flags;
-        cout<<"Konsolidacja: "<<ss2.str()<<endl;
+        IO::echo("Konsolidacja: "+ss2.str());
         if(!system2(ss2.str())){
-            cout<<"[!] BLAD: blad konsolidacji aplikacji"<<endl;
+            IO::error("blad konsolidacji aplikacji");
             return false;
         }
     }else{
-        cout<<"Brak zmian do wprowadzenia."<<endl;
+        IO::echo("Brak zmian do wprowadzenia.");
     }
     delete srcs;
     return true;
@@ -153,25 +165,34 @@ bool ymake_generate_bat(string ymake_filename, string output_filename){
     stringstream output;
     vector<Variable*>* variables = get_variables(ymake_filename);
     if(variables==NULL){
-        cout<<"[!] BLAD: brak poprawnego pliku \""<<ymake_filename<<"\""<<endl;
+        IO::error("brak poprawnego pliku \""+ymake_filename+"\"");
         return false;
     }
     //odczytanie z pliku parametrów
     string ymake_compiler = get_var_string(variables, "COMPILER");
     string ymake_compiler_path = get_var_string(variables, "COMPILER_PATH");
     string ymake_src = get_var_string(variables, "SRC");
-    string ymake_headers = get_var_string(variables, "HEADERS");
     string ymake_src_path = get_var_string(variables, "SRC_PATH");
     string ymake_output = get_var_string(variables, "OUTPUT");
     string ymake_libs = get_var_string(variables, "LIBS");
     string ymake_compiler_flags = get_var_string(variables, "COMPILER_FLAGS");
     string ymake_linker_flags = get_var_string(variables, "LINKER_FLAGS");
     string ymake_resource = get_var_string(variables, "RESOURCE");
-    string ymake_version_file = get_var_string(variables, "VERSION_FILE");
     for(unsigned int i=0; i<variables->size(); i++){
         delete variables->at(i);
     }
     delete variables;
+    //walidacja wczytanych danych, wartoœci domyœlne
+    if(ymake_compiler.length()==0) ymake_compiler = "g++";
+    if(ymake_output.length()==0) ymake_output = "main.exe";
+    if(ymake_compiler_path.length()==0){
+        IO::error("Brak sciezki do kompilatora (COMPILER_PATH)");
+        return false;
+    }
+    if(ymake_src.length()==0){
+        IO::error("Brak plikow zrodlowych (SRC)");
+        return false;
+    }
     //format ymake_src_path
     if(ymake_src_path.length()>0){
         if(ymake_src_path[ymake_src_path.length()-1]!='\\') ymake_src_path+='\\';
@@ -210,12 +231,12 @@ bool ymake_generate_bat(string ymake_filename, string output_filename){
     plik.open(output_filename.c_str());
     if(!plik.good()){
         plik.close();
-        cout<<"[!] BLAD: Blad zapisywania do pliku"<<endl;
+        IO::error("Blad zapisywania do pliku: "+output_filename);
         return false;
     }
     plik<<output.str();
     plik.close();
-    cout<<"Wygenerowano plik: "<<output_filename<<endl;
+    IO::echo("Wygenerowano plik: "+output_filename);
     return true;
 }
 
@@ -224,25 +245,34 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename){
     output_filename = dir_format(output_filename);
     vector<Variable*>* variables = get_variables(ymake_filename);
     if(variables==NULL){
-        cout<<"[!] BLAD: brak poprawnego pliku \""<<ymake_filename<<"\""<<endl;
+        IO::error("brak poprawnego pliku \""+ymake_filename+"\"");
         return false;
     }
     //odczytanie z pliku parametrów
     string ymake_compiler = get_var_string(variables, "COMPILER");
     string ymake_compiler_path = get_var_string(variables, "COMPILER_PATH");
     string ymake_src = get_var_string(variables, "SRC");
-    string ymake_headers = get_var_string(variables, "HEADERS");
     string ymake_src_path = get_var_string(variables, "SRC_PATH");
     string ymake_output = get_var_string(variables, "OUTPUT");
     string ymake_libs = get_var_string(variables, "LIBS");
     string ymake_compiler_flags = get_var_string(variables, "COMPILER_FLAGS");
     string ymake_linker_flags = get_var_string(variables, "LINKER_FLAGS");
     string ymake_resource = get_var_string(variables, "RESOURCE");
-    string ymake_version_file = get_var_string(variables, "VERSION_FILE");
     for(unsigned int i=0; i<variables->size(); i++){
         delete variables->at(i);
     }
     delete variables;
+    //walidacja wczytanych danych, wartoœci domyœlne
+    if(ymake_compiler.length()==0) ymake_compiler = "g++";
+    if(ymake_output.length()==0) ymake_output = "main.exe";
+    if(ymake_compiler_path.length()==0){
+        IO::error("Brak sciezki do kompilatora (COMPILER_PATH)");
+        return false;
+    }
+    if(ymake_src.length()==0){
+        IO::error("Brak plikow zrodlowych (SRC)");
+        return false;
+    }
     //format ymake_src_path
     if(ymake_src_path.length()>0){
         if(ymake_src_path[ymake_src_path.length()-1]!='\\') ymake_src_path+='\\';
@@ -294,12 +324,12 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename){
     plik.open(output_filename.c_str());
     if(!plik.good()){
         plik.close();
-        cout<<"[!] BLAD: Blad zapisywania do pliku"<<endl;
+        IO::error("Blad zapisywania do pliku: "+output_filename);
         return false;
     }
     plik<<output.str();
     plik.close();
-    cout<<"Wygenerowano plik: "<<output_filename<<endl;
+    IO::echo("Wygenerowano plik: "+output_filename);
     return true;
 }
 
@@ -308,7 +338,7 @@ bool run_ymake(string ymake_filename, int mode){
     //odczytanie parametrów z pliku
     vector<Variable*>* variables = get_variables(ymake_filename);
     if(variables==NULL){
-        cout<<"[!] BLAD: brak poprawnego pliku \""<<ymake_filename<<"\""<<endl;
+        IO::error("brak poprawnego pliku \""+ymake_filename+"\"");
         return false;
     }
     string ymake_output = get_var_string(variables, "OUTPUT");
@@ -316,26 +346,28 @@ bool run_ymake(string ymake_filename, int mode){
         delete variables->at(i);
     }
     delete variables;
+    //walidacja wczytanych danych, wartoœci domyœlne
+    if(ymake_output.length()==0) ymake_output = "main.exe";
     //zmiana katalogu roboczego na ./bin
     if(!set_workdir(".\\bin")){
-        cout<<"[!] BLAD: blad zmiany katalogu roboczego na bin\\"<<endl;
+        IO::error("blad zmiany katalogu roboczego na bin\\");
         return false;
     }
     stringstream ss;
     if(mode==1){ // zwyk³y run - system
         ss<<"\""<<ymake_output<<"\"";
-        cout<<"Uruchamianie: "<<ss.str()<<endl;
+        IO::echo("Uruchamianie: "+ss.str());
         return system2(ss.str());
     }else if(mode==2){ //run start
         ss<<"start \"\" \""<<ymake_output<<"\"";
-        cout<<"Uruchamianie: "<<ss.str()<<endl;
+        IO::echo("Uruchamianie: "+ss.str());
         return system2(ss.str());
     }else if(mode==3){ //shelexecute
         if((int)ShellExecute(0, "open", ymake_output.c_str(), "", 0, SW_SHOW) > 32){
-            cout<<"Uruchomiono \""<<ymake_output<<"\"..."<<endl;
+            IO::echo("Uruchomiono \""+ymake_output+"\"...");
             return true;
         }
-        cout<<"[!] Blad uruchamiania poleceniem ShellExecute: \""<<ymake_output<<"\""<<endl;
+        IO::error("Blad uruchamiania poleceniem ShellExecute: \""+ymake_output+"\"");
         return false;
     }
     return false;
@@ -343,15 +375,15 @@ bool run_ymake(string ymake_filename, int mode){
 
 bool clean_all(){
     if(!dir_exists("prv")){
-        cout<<"INFO: brak folderu prv\\"<<endl;
+        IO::info("brak folderu prv\\");
         return true;
     }
-    cout<<"Czyszczenie..."<<endl;
+    IO::echo("Czyszczenie...");
     vector<string>* files = get_files_from_dir("prv");
     for(unsigned int i=0; i<files->size(); i++){
-        cout<<"Usuwanie: prv\\"<<files->at(i)<<endl;
+        IO::echo("Usuwanie: prv\\"+files->at(i));
         if(!delete_file("prv\\"+files->at(i))){
-            cout<<"[!] BLAD: blad usuwania pliku prv\\"<<files->at(i)<<endl;
+            IO::error("blad usuwania pliku prv\\"+files->at(i));
             return false;
         }
     }

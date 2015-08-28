@@ -6,6 +6,16 @@
 
 using namespace std;
 
+class IO{
+private:
+	static IO* instance;
+public:
+    static IO* i();
+    static void echo(string s);
+    static void error(string s);
+    static void info(string s);
+};
+
 class Flags{
 public:
     static bool verbose;
