@@ -21,4 +21,4 @@ string dir_format(string &dir);
 
 vector<string>* get_files_from_dir(string dir, string ext="");
 
-#endif // FILES_H
+#endif

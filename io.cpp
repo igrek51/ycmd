@@ -58,7 +58,7 @@ bool next_element_default(string szukany, vector<string>* elements, string &next
                 next_text = elements->at(i+1);
             }else{ //nie istnieje następny
                 next_text = domyslny;
-                cout<<"Domyslna wartosc 1. parametru po "<<szukany<<": "<<domyslny<<endl;
+                cout<<"Domyslna wartosc 1. parametru po \""<<szukany<<"\": "<<domyslny<<endl;
             }
             return true;
         }
@@ -75,12 +75,12 @@ bool next_element_default2(string szukany, vector<string>* elements, string &nex
             }else if(i+1 < elements->size()){ //istnieje 1 następny element
                 next_text1 = elements->at(i+1);
                 next_text2 = domyslny2;
-                cout<<"Domyslna wartosc 2. parametru po "<<szukany<<": "<<domyslny2<<endl;
+                cout<<"Domyslna wartosc 2. parametru po \""<<szukany<<"\": "<<domyslny2<<endl;
             }else{ //nie istnieje żodyn następny
                 next_text1 = domyslny1;
                 next_text2 = domyslny2;
-                cout<<"Domyslna wartosc 1. parametru po "<<szukany<<": "<<domyslny1<<endl;
-                cout<<"Domyslna wartosc 2. parametru po "<<szukany<<": "<<domyslny2<<endl;
+                cout<<"Domyslna wartosc 1. parametru po \""<<szukany<<"\": "<<domyslny1<<endl;
+                cout<<"Domyslna wartosc 2. parametru po \""<<szukany<<"\": "<<domyslny2<<endl;
             }
             return true;
         }

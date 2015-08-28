@@ -15,7 +15,8 @@ SOURCES +=\
     system.cpp \
     versioning.cpp \
     io.cpp \
-    commands.cpp
+    commands.cpp \
+    variable.cpp
 
 
 HEADERS += \
@@ -24,5 +25,6 @@ HEADERS += \
     system.h \
     versioning.h \
     io.h \
-    commands.h
+    commands.h \
+    variable.h
 

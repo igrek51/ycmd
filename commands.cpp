@@ -76,12 +76,17 @@ bool exec_commands(vector<string> *args){
         if(!ymake_generate_makefile(dir_format(next_text1), dir_format(next_text2)))
             return false;
     }else if(next_element_default("--run", args, next_text1, "ymake")){ //uruchom aplikację z ymake
-        if(!run_ymake(dir_format(next_text1), false)){
+        if(!run_ymake(dir_format(next_text1), 1)){
             cout<<"[!] BLAD: blad uruchamiania z pliku: "<<next_text1<<endl;
             return false;
         }
     }else if(next_element_default("--run-start", args, next_text1, "ymake")){ //uruchom aplikację z ymake (z poleceniem start)
-        if(!run_ymake(dir_format(next_text1),true)){
+        if(!run_ymake(dir_format(next_text1), 2)){
+            cout<<"[!] BLAD: blad uruchamiania z pliku: "<<next_text1<<endl;
+            return false;
+        }
+    }else if(next_element_default("--run-shellexec", args, next_text1, "ymake")){ //uruchom aplikację przez shellexecute
+        if(!run_ymake(dir_format(next_text1), 3)){
             cout<<"[!] BLAD: blad uruchamiania z pliku: "<<next_text1<<endl;
             return false;
         }

@@ -6,21 +6,6 @@
 #include <sstream>
 #include <windows.h>
 
-vector<string>* get_ymake_lines(string filename){
-    vector<string>* lines = get_all_lines(filename);
-    if(lines==NULL) return NULL;
-    for(unsigned int i=0; i<lines->size(); i++){
-        //usunięcie linii komentarzy
-        if(lines->at(i).length()>=2){
-            if(lines->at(i)[0]=='/'&&lines->at(i)[1]=='/'){
-                lines->erase(lines->begin()+i);
-                i--;
-            }
-        }
-    }
-    return lines;
-}
-
 void add_to_list(vector<string>* kontener, string elem){
     //jeśli już istnieje
     for(unsigned int i=0; i<kontener->size(); i++){
@@ -441,7 +426,7 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename){
     return true;
 }
 
-bool run_ymake(string ymake_filename, bool start){
+bool run_ymake(string ymake_filename, int mode){
     vector<string> *lines = get_ymake_lines(ymake_filename);
     if(lines==NULL){
         cout<<"[!] BLAD: brak poprawnego pliku \""<<ymake_filename<<"\""<<endl;
@@ -456,10 +441,21 @@ bool run_ymake(string ymake_filename, bool start){
     if(next_element("OUTPUT=",lines,next2))
         ymake_output = dir_format(lines->at(next2));
     stringstream ss;
-    if(start) ss<<"start \"\" ";
-    ss<<"\""<<ymake_output<<"\"";
-    cout<<"Uruchamianie: "<<ss.str()<<endl;
-    if(!system2(ss.str()))
+    if(mode==1){ // zwykły run - system
+        ss<<"\""<<ymake_output<<"\"";
+        cout<<"Uruchamianie: "<<ss.str()<<endl;
+        return system2(ss.str());
+    }else if(mode==2){ //run start
+        ss<<"start \"\" \""<<ymake_output<<"\"";
+        cout<<"Uruchamianie: "<<ss.str()<<endl;
+        return system2(ss.str());
+    }else if(mode==3){ //shelexecute
+        if((int)ShellExecute(0, "open", ymake_output.c_str(), "", 0, SW_SHOW) > 32){
+            cout<<"Uruchomiono \""<<ymake_output<<"\"..."<<endl;
+            return true;
+        }
+        cout<<"[!] Blad uruchamiania poleceniem ShellExecute: \""<<ymake_output<<"\""<<endl;
         return false;
-    return true;
+    }
+    return false;
 }

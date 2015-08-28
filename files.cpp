@@ -28,11 +28,11 @@ bool files_equal(string file1, string file2){
     if(!file_exists(file2))	return false;
     fstream plik1, plik2;
     //rozmiary plików
-    plik1.open(file1.c_str(),fstream::in|fstream::binary);
-    plik1.seekg(0,plik1.end);
+    plik1.open(file1.c_str(), fstream::in|fstream::binary);
+    plik1.seekg(0, plik1.end);
     unsigned int fsize1 = plik1.tellg();
-    plik2.open(file2.c_str(),fstream::in|fstream::binary);
-    plik2.seekg(0,plik2.end);
+    plik2.open(file2.c_str(), fstream::in|fstream::binary);
+    plik2.seekg(0, plik2.end);
     unsigned int fsize2 = plik2.tellg();
     if(fsize1!=fsize2){ //różne rozmiary
         plik1.close();
@@ -41,14 +41,14 @@ bool files_equal(string file1, string file2){
     }
     //zawartość plików
     char *plik1_tab = new char [fsize1];
-    plik1.seekg(0,plik1.beg);
-    plik1.read(plik1_tab,fsize1);
+    plik1.seekg(0, plik1.beg);
+    plik1.read(plik1_tab, fsize1);
     plik1.close();
     char *plik2_tab = new char [fsize2];
-    plik2.seekg(0,plik2.beg);
-    plik2.read(plik2_tab,fsize2);
+    plik2.seekg(0, plik2.beg);
+    plik2.read(plik2_tab, fsize2);
     plik2.close();
-    if(memcmp(plik1_tab,plik2_tab,fsize1)!=0){ //różna zawartość
+    if(memcmp(plik1_tab, plik2_tab, fsize1)!=0){ //różna zawartość
         delete[] plik1_tab;
         delete[] plik2_tab;
         return false;
@@ -75,15 +75,16 @@ vector<string>* get_all_lines(string filename){
         return NULL;
     }
     vector<string>* lines = new vector<string>;
-    string linia, linia2;
+    string linia;
     do{
-        getline(plik,linia,'\n');
-        linia2="";
-        for(unsigned int i=0; i<linia.length(); i++){
-            if(linia[i]=='\r') continue;
-            linia2+=linia[i];
+        getline(plik,linia,'\n'); //rozdzielenie znakami \n
+        for(unsigned int i=0; i<linia.length(); i++){ //usunięcie znaków \r
+            if(linia[i]=='\r'){
+                linia.erase(linia.begin()+i);
+                i--;
+            }
         }
-        lines->push_back(linia2);
+        lines->push_back(linia);
     }while(!plik.eof());
     plik.close();
     return lines;
