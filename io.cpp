@@ -33,50 +33,65 @@ void show_help(){
     cout<<"--pe - czekaj w przypadku bledu"<<endl;
 }
 
-bool next_element(string szukany, vector<string>* elements, int &next){
-    for(unsigned int i=0; i<elements->size(); i++){
-        if((*elements)[i]==szukany){
-            if(i+1<elements->size()){
-                next = i+1;
+bool next_arg(string szukany, vector<string>* args, string &next_text){
+    for(unsigned int i=0; i<args->size(); i++){
+        if(args->at(i) == szukany){
+            if(i+1 < args->size()){ //jeœli istnieje nastêpny element
+                next_text = args->at(i+1);
                 return true;
             }else{
-                cout<<"[!] BLAD: brak parametru po "<<szukany<<endl;
-                next = -2;
+                cout<<"[BLAD!] brak parametru po "<<szukany<<endl;
                 Flags::error = true;
-                return false; //nie istnieje nastÄ™pny
+                return false; //nie istnieje nastêpny
             }
         }
     }
-    next = -1;
-    return false; //nie znalazÅ‚o argumentu
+    return false; //nie znalaz³o argumentu
 }
 
-bool next_element_default(string szukany, vector<string>* elements, string &next_text, string domyslny){
-    for(unsigned int i=0; i<elements->size(); i++){
-        if(elements->at(i) == szukany){
-            if(i+1 < elements->size()){ //istnieje nastÄ™pny element
-                next_text = elements->at(i+1);
-            }else{ //nie istnieje nastÄ™pny
+bool next_arg(string szukany, vector<string>* args, string &next_text1, string &next_text2){
+    for(unsigned int i=0; i<args->size(); i++){
+        if(args->at(i) == szukany){
+            if(i+2 < args->size()){ //jeœli istniej¹ 2 nastêpne elementy
+                next_text1 = args->at(i+1);
+                next_text2 = args->at(i+2);
+                return true;
+            }else{
+                cout<<"[BLAD!] brak 2 parametrow po "<<szukany<<endl;
+                Flags::error = true;
+                return false; //nie istniej¹ oba
+            }
+        }
+    }
+    return false; //nie znalaz³o argumentu
+}
+
+bool next_arg_default(string szukany, vector<string>* args, string &next_text, string domyslny){
+    for(unsigned int i=0; i<args->size(); i++){
+        if(args->at(i) == szukany){
+            if(i+1 < args->size()){ //istnieje nastêpny element
+                next_text = args->at(i+1);
+            }else{ //nie istnieje nastêpny
                 next_text = domyslny;
                 cout<<"Domyslna wartosc 1. parametru po \""<<szukany<<"\": "<<domyslny<<endl;
             }
             return true;
         }
     }
-    return false; //nie znalazÅ‚o szukanego argumentu
+    return false; //nie znalaz³o szukanego argumentu
 }
 
-bool next_element_default2(string szukany, vector<string>* elements, string &next_text1, string domyslny1, string &next_text2, string domyslny2){
-    for(unsigned int i=0; i<elements->size(); i++){
-        if(elements->at(i) == szukany){
-            if(i+2 < elements->size()){ //istniejÄ… 2 nastÄ™pne elementy
-                next_text1 = elements->at(i+1);
-                next_text2 = elements->at(i+2);
-            }else if(i+1 < elements->size()){ //istnieje 1 nastÄ™pny element
-                next_text1 = elements->at(i+1);
+bool next_arg_default(string szukany, vector<string>* args, string &next_text1, string domyslny1, string &next_text2, string domyslny2){
+    for(unsigned int i=0; i<args->size(); i++){
+        if(args->at(i) == szukany){
+            if(i+2 < args->size()){ //istniej¹ 2 nastêpne elementy
+                next_text1 = args->at(i+1);
+                next_text2 = args->at(i+2);
+            }else if(i+1 < args->size()){ //istnieje 1 nastêpny element
+                next_text1 = args->at(i+1);
                 next_text2 = domyslny2;
                 cout<<"Domyslna wartosc 2. parametru po \""<<szukany<<"\": "<<domyslny2<<endl;
-            }else{ //nie istnieje Å¼odyn nastÄ™pny
+            }else{ //nie istnieje ¿odyn nastêpny
                 next_text1 = domyslny1;
                 next_text2 = domyslny2;
                 cout<<"Domyslna wartosc 1. parametru po \""<<szukany<<"\": "<<domyslny1<<endl;
@@ -85,7 +100,23 @@ bool next_element_default2(string szukany, vector<string>* elements, string &nex
             return true;
         }
     }
-    return false; //nie znalazÅ‚o szukanego argumentu
+    return false; //nie znalaz³o szukanego argumentu
+}
+
+bool next_arg_number(string szukany, vector<string>* args, int &next){
+    for(unsigned int i=0; i<args->size(); i++){
+        if(args->at(i) == szukany){
+            if(i+1 < args->size()){ //jeœli istnieje nastêpny element
+                next = i + 1;
+                return true;
+            }else{
+                cout<<"[BLAD!] brak parametru po "<<szukany<<endl;
+                Flags::error = true;
+                return false; //nie istnieje nastêpny
+            }
+        }
+    }
+    return false; //nie znalaz³o argumentu
 }
 
 bool is_arg(string argument, vector<string> *args){

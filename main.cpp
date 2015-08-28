@@ -1,3 +1,6 @@
+#include "system.h"
+#include "commands.h"
+
 #include <iostream>
 #include <cstdlib>
 #include <vector>
@@ -5,9 +8,6 @@
 #include <sstream>
 #include <conio.h>
 #include <fstream>
-
-#include "system.h"
-#include "commands.h"
 
 using namespace std;
 

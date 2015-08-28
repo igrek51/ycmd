@@ -1,4 +1,5 @@
 #include "system.h"
+#include "files.h"
 
 #include <windows.h>
 #include <ctime>
@@ -15,7 +16,10 @@ bool system2(string cmd){
 }
 
 bool set_env(string variable, string value){
-    if(SetEnvironmentVariable(variable.c_str(),value.c_str())==0) return false;
+    if(SetEnvironmentVariable(variable.c_str(),value.c_str())==0){
+        cout<<"[BLAD!] Blad zmiany zmiennej srodowiskowej: "<<variable<<endl;
+        return false;
+    }
     return true;
 }
 
@@ -32,8 +36,11 @@ bool add_path(string new_path){
 }
 
 bool set_workdir(string wd){
-    if(!SetCurrentDirectory(wd.c_str()))
+    wd = dir_format(wd);
+    if(!SetCurrentDirectory(wd.c_str())){
+        cout<<"[BLAD!] Blad zmiany katalogu roboczego: "<<wd<<endl;
         return false;
+    }
     return true;
 }
 

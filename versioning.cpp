@@ -20,8 +20,7 @@ bool version_get(string filename, int &v1, int &v2, int &v3){
         //szukanie formatu //v 1 2 13
         if(lines->at(liniav).length()<8)
             continue;
-        if(lines->at(liniav)[0]=='/' && lines->at(liniav)[1]=='/' && lines->at(liniav)[2]=='v')
-            break;
+        if(lines->at(liniav)[0]=='/' && lines->at(liniav)[1]=='/' && lines->at(liniav)[2]=='v') break;
     }
     ss<<lines->at(liniav);
     char buf[5];
@@ -37,11 +36,11 @@ bool version_get(string filename, int &v1, int &v2, int &v3){
 }
 
 bool version_inc(string filename){
-    int v1=1,v2=0,v3=0;
+    int v1=1, v2=0, v3=0;
     //pobranie numeru wersji
     if(!version_get(filename, v1, v2, v3))
         return false;
-    //zwiÄ™kszenie wersji
+    //zwiêkszenie wersji
     v3++;
     if(v3>=100){
         v3 = 0;

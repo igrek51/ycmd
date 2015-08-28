@@ -91,6 +91,7 @@ vector<string>* get_all_lines(string filename){
 }
 
 vector<string>* get_nonempty_lines(string filename){
+    filename = dir_format(filename);
     vector<string>* lines = get_all_lines(filename);
     if(lines==NULL) return NULL;
     for(unsigned int i=0; i<lines->size(); i++){
@@ -105,13 +106,13 @@ vector<string>* get_nonempty_lines(string filename){
 
 bool has_extension(string name, string ext){
     if(ext.length()==0) return true;
-    if(ext.length()>name.length()) return false;
+    if(ext.length() > name.length()) return false;
     name = name.substr(name.length()-ext.length(),ext.length());
     if(name==ext) return true;
     return false;
 }
 
-string dir_format(string &dir){
+string dir_format(string dir){
     for(unsigned int i=0; i<dir.length(); i++){
         if(dir[i]=='/') dir[i]='\\';
     }
@@ -129,7 +130,7 @@ vector<string>* get_files_from_dir(string dir, string ext){
         return NULL;
     }
     WIN32_FIND_DATAA ffd;
-    HANDLE hFind = FindFirstFileA((dir+"\\*").c_str(),&ffd);
+    HANDLE hFind = FindFirstFileA((dir+"\\*").c_str(), &ffd);
     if(hFind==INVALID_HANDLE_VALUE){
         cout<<"[!] BLAD: blad otwierania folderu "<<dir<<endl;
         return NULL;
@@ -141,11 +142,11 @@ vector<string>* get_files_from_dir(string dir, string ext){
         if(strcmp(stemp,"..")==0) continue;
         if(strcmp(stemp,"desktop.ini")==0) continue;
         if(!(ffd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)){ //plik
-            if(has_extension(ffd.cFileName,ext)){
+            if(has_extension(ffd.cFileName, ext)){
                 files->push_back(ffd.cFileName);
             }
         }
-    }while(FindNextFileA(hFind,&ffd)!=0);
+    }while(FindNextFileA(hFind, &ffd)!=0);
     FindClose(hFind);
     return files;
 }

@@ -17,7 +17,7 @@ vector<string>* get_all_lines(string filename);
 vector<string>* get_nonempty_lines(string filename);
 
 bool has_extension(string name, string ext);
-string dir_format(string &dir);
+string dir_format(string dir);
 
 vector<string>* get_files_from_dir(string dir, string ext="");
 

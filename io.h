@@ -17,9 +17,11 @@ public:
 
 void show_help();
 
-bool next_element(string szukany, vector<string>* elements, int &next);
-bool next_element_default(string szukany, vector<string>* elements, string &next_text, string domyslny="");
-bool next_element_default2(string szukany, vector<string>* elements, string &next_text1, string domyslny1, string &next_text2, string domyslny2="");
+bool next_arg(string szukany, vector<string>* args, string &next_text);
+bool next_arg(string szukany, vector<string>* args, string &next_text1, string &next_text2);
+bool next_arg_default(string szukany, vector<string>* args, string &next_text, string domyslny="");
+bool next_arg_default(string szukany, vector<string>* args, string &next_text1, string domyslny1, string &next_text2, string domyslny2="");
+bool next_arg_number(string szukany, vector<string>* args, int &next);
 
 bool is_arg(string argument, vector<string> *args);
 

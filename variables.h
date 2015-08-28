@@ -1,5 +1,5 @@
-#ifndef VARIABLE_H
-#define VARIABLE_H
+#ifndef VARIABLES_H
+#define VARIABLES_H
 
 #include <iostream>
 #include <vector>
@@ -14,7 +14,6 @@ public:
 };
 
 vector<string>* get_variables_lines(string filename);
-
 vector<Variable*>* get_variables(string filename);
 
 string get_var_string(vector<Variable*>* variables, string name);
@@ -22,5 +21,11 @@ int get_var_int(vector<Variable*>* variables, string name);
 bool get_var_bool(vector<Variable*>* variables, string name);
 
 string trim_spaces(string s);
+
+vector<string>* get_list(string lista);
+vector<string>* get_list_ex(string lista, string dir);
+
+void add_to_list(vector<string>* kontener, string elem);
+void remove_from_list(vector<string>* kontener, string elem);
 
 #endif
