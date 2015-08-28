@@ -68,6 +68,7 @@ bool delete_file(string filename){
 
 
 vector<string>* get_all_lines(string filename){
+    filename = dir_format(filename);
     fstream plik;
     plik.open(filename.c_str(),fstream::in|fstream::binary);
     if(!plik.good()){
@@ -91,7 +92,6 @@ vector<string>* get_all_lines(string filename){
 }
 
 vector<string>* get_nonempty_lines(string filename){
-    filename = dir_format(filename);
     vector<string>* lines = get_all_lines(filename);
     if(lines==NULL) return NULL;
     for(unsigned int i=0; i<lines->size(); i++){

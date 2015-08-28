@@ -2,6 +2,8 @@
 #include "files.h"
 #include "versioning.h"
 #include "variables.h"
+#include "io.h"
+#include "system.h"
 
 #include <fstream>
 #include <sstream>
@@ -337,4 +339,21 @@ bool run_ymake(string ymake_filename, int mode){
         return false;
     }
     return false;
+}
+
+bool clean_all(){
+    if(!dir_exists("prv")){
+        cout<<"INFO: brak folderu prv\\"<<endl;
+        return true;
+    }
+    cout<<"Czyszczenie..."<<endl;
+    vector<string>* files = get_files_from_dir("prv");
+    for(unsigned int i=0; i<files->size(); i++){
+        cout<<"Usuwanie: prv\\"<<files->at(i)<<endl;
+        if(!delete_file("prv\\"+files->at(i))){
+            cout<<"[!] BLAD: blad usuwania pliku prv\\"<<files->at(i)<<endl;
+            return false;
+        }
+    }
+    return true;
 }

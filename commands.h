@@ -8,6 +8,4 @@ using namespace std;
 
 bool exec_commands(vector<string> *args);
 
-bool clean_all();
-
 #endif

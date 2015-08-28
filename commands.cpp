@@ -5,10 +5,6 @@
 #include "versioning.h"
 #include "ymake.h"
 
-#include <cstdlib>
-#include <ctime>
-#include <sstream>
-
 bool exec_commands(vector<string> *args){
     string next1;
     string next2;
@@ -96,23 +92,6 @@ bool exec_commands(vector<string> *args){
     }else{
         cout<<"[!] BLAD: brak poprawnego polecenia"<<endl;
         return false;
-    }
-    return true;
-}
-
-bool clean_all(){
-    if(!dir_exists("prv")){
-        cout<<"INFO: brak folderu prv\\"<<endl;
-        return true;
-    }
-    cout<<"Czyszczenie..."<<endl;
-    vector<string>* files = get_files_from_dir("prv");
-    for(unsigned int i=0; i<files->size(); i++){
-        cout<<"Usuwanie: prv\\"<<files->at(i)<<endl;
-        if(!delete_file("prv\\"+files->at(i))){
-            cout<<"[!] BLAD: blad usuwania pliku prv\\"<<files->at(i)<<endl;
-            return false;
-        }
     }
     return true;
 }

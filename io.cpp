@@ -1,6 +1,7 @@
 #include "io.h"
 #include "system.h"
 #include "version.h"
+
 #include <conio.h>
 
 bool Flags::verbose = false;
@@ -128,12 +129,12 @@ bool is_arg(string argument, vector<string> *args){
 
 bool input_cmd(){
     char ch, ch2;
-    string cmd="";
+    string cmd = "";
     while(true){
         cout<<"> ";
-        cmd="";
+        cmd = "";
         do{
-            ch=getch();
+            ch = getch();
             if(ch==27){ //escape
                 cmd="exit";
                 break;

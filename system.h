@@ -2,9 +2,6 @@
 #define SYSTEM_H
 
 #include <iostream>
-#include <vector>
-
-#include "io.h"
 
 using namespace std;
 

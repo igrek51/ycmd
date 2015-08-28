@@ -21,6 +21,7 @@ int get_var_int(vector<Variable*>* variables, string name);
 bool get_var_bool(vector<Variable*>* variables, string name);
 
 string trim_spaces(string s);
+string trim_quotes(string s);
 
 vector<string>* get_list(string lista);
 vector<string>* get_list_ex(string lista, string dir);

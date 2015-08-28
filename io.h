@@ -11,7 +11,6 @@ public:
     static bool verbose;
     static bool pause;
     static bool error;
-
     static string version;
 };
 

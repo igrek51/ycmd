@@ -1,5 +1,6 @@
 #include "variables.h"
 #include "files.h"
+
 #include <cstdlib>
 
 Variable::Variable(string name, string value){
@@ -36,7 +37,7 @@ vector<Variable*>* get_variables(string filename){
                 string name = lines->at(i).substr(0, j);
                 string value = lines->at(i).substr(j+1);
                 name = trim_spaces(name);
-                value = trim_spaces(value);
+                value = trim_quotes(trim_spaces(value));
                 variables->push_back(new Variable(name, value));
                 break;
             }
@@ -53,7 +54,7 @@ string get_var_string(vector<Variable*>* variables, string name){
             return variables->at(i)->value;
         }
     }
-    cout<<"[BLAD!] Nie znaleziono zmiennej: "<<name;
+    cout<<"[BLAD!] Nie znaleziono zmiennej: "<<name<<endl;
     return "";
 }
 
@@ -80,6 +81,19 @@ string trim_spaces(string s){
     //obciêcie spacji na pocz¹tku
     while(s.length() > 0  && s[0] == ' '){
         s = s.substr(1);
+    }
+    return s;
+}
+
+string trim_quotes(string s){
+    if(s.length()>=3){
+        //jeœli cudzys³owy s¹ na poczatku i na koñcu
+        if(s[0]=='\"' && s[s.length()-1]=='\"'){
+            //jeœli w ca³ym stringu znajduj¹ siê tylkko 2 cudzys³owy
+            if(s.substr(1, s.length()-2).find('\"')==string::npos){
+                s = s.substr(1, s.length()-2); //usuñ je
+            }
+        }
     }
     return s;
 }
