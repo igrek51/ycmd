@@ -72,7 +72,7 @@ bool version_inc(string filename){
         IO::error("blad zapisu do pliku: "+filename);
         return false;
     }
-    plik<<"// -- "<<get_time_date()<<" -- (ymake v"<<Flags::version<<") --"<<endl;
+    plik<<"// -- "<<get_time_date()<<" -- (ymake v"<<IO::version<<") --"<<endl;
     plik<<"#ifndef VERSION_H"<<endl;
     plik<<"#define VERSION_H"<<endl<<endl;
     plik<<"#define VERSION \""<<v1<<"."<<v2<<"."<<v3<<"\""<<endl<<endl;

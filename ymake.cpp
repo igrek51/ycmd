@@ -11,7 +11,7 @@
 
 bool ymake(string ymake_filename){
     ymake_filename = dir_format(ymake_filename);
-    IO::echo("ymake v"+Flags::version+":");
+    IO::echo("ymake v"+IO::version+":");
     vector<Variable*>* variables = get_variables(ymake_filename);
     if(variables==NULL){
         IO::error("brak poprawnego pliku \""+ymake_filename+"\"");

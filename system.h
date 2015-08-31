@@ -6,6 +6,7 @@
 using namespace std;
 
 bool system2(string cmd);
+bool system_echo(string cmd);
 
 bool set_env(string variable, string value);
 bool add_path(string new_path);

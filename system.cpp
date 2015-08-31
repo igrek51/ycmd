@@ -7,13 +7,15 @@
 #include <sstream>
 
 bool system2(string cmd){
-    if(Flags::verbose)
-        IO::echo("Wykonywanie: "+cmd+" ...");
     if(system(cmd.c_str())==0)
         return true;
     IO::error("Blad polecenia: "+cmd);
-    Flags::error = true;
     return false;
+}
+
+bool system_echo(string cmd){
+    IO::echo("Wykonywanie: "+cmd);
+    return system2(cmd);
 }
 
 bool set_env(string variable, string value){

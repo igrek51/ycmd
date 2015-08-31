@@ -7,32 +7,26 @@
 using namespace std;
 
 class IO{
-private:
-	static IO* instance;
 public:
-    static IO* i();
-    static void echo(string s);
+    static bool quiet;
+    static bool pause;
+    static bool error_was;
+    static string version;
+    static void echo(string s, int priority = 0);
     static void error(string s);
     static void info(string s);
 };
 
-class Flags{
-public:
-    static bool verbose;
-    static bool pause;
-    static bool error;
-    static string version;
-};
-
 void show_help();
 
-bool next_arg(string szukany, vector<string>* args, string &next_text);
-bool next_arg(string szukany, vector<string>* args, string &next_text1, string &next_text2);
-bool next_arg_default(string szukany, vector<string>* args, string &next_text, string domyslny="");
-bool next_arg_default(string szukany, vector<string>* args, string &next_text1, string domyslny1, string &next_text2, string domyslny2="");
+vector<string>* get_args(int argc, char **argv);
+int find_arg(string szukany, vector<string>* args);
+bool is_arg(string szukany, vector<string> *args);
 bool next_arg_number(string szukany, vector<string>* args, int &next);
-
-bool is_arg(string argument, vector<string> *args);
+//wyci¹gniêcie nastêpnego parametru
+bool next_arg(string szukany, vector<string>* args, string &next_text, string domyslny = "");
+//wyci¹gniêcie 2 nastêpnych parametrów
+bool next_arg2(string szukany, vector<string>* args, string &next_text1, string &next_text2, string domyslny1 = "", string domyslny2 = "");
 
 bool input_cmd();
 

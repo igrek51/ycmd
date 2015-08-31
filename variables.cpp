@@ -90,7 +90,7 @@ string trim_quotes(string s){
     if(s.length()>=3){
         //jeœli cudzys³owy s¹ na poczatku i na koñcu
         if(s[0]=='\"' && s[s.length()-1]=='\"'){
-            //jeœli w ca³ym stringu znajduj¹ siê tylkko 2 cudzys³owy
+            //jeœli w ca³ym stringu znajduj¹ siê tylko 2 cudzys³owy
             if(s.substr(1, s.length()-2).find('\"')==string::npos){
                 s = s.substr(1, s.length()-2); //usuñ je
             }
