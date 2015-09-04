@@ -17,8 +17,6 @@ public:
     static void info(string s);
 };
 
-void show_help();
-
 vector<string>* get_args(int argc, char **argv);
 int find_arg(string szukany, vector<string>* args);
 bool is_arg(string szukany, vector<string> *args);

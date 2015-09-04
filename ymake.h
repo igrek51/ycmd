@@ -14,4 +14,6 @@ bool run_ymake(string ymake_filename, int mode);
 
 bool clean_all();
 
+bool init_ymake();
+
 #endif

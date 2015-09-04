@@ -48,26 +48,27 @@ vector<Variable*>* get_variables(string filename){
     return variables;
 }
 
-string get_var_string(vector<Variable*>* variables, string name){
-    if(variables==NULL) return "";
+
+string get_var_string(vector<Variable*>* variables, string name, string domyslny){
+    if(variables==NULL) return domyslny;
     for(unsigned int i=0; i<variables->size(); i++){
         if(variables->at(i)->name == name){
             return variables->at(i)->value;
         }
     }
     IO::error("Nie znaleziono zmiennej: "+name);
-    return "";
+    return domyslny;
 }
 
-int get_var_int(vector<Variable*>* variables, string name){
+int get_var_int(vector<Variable*>* variables, string name, int domyslny){
     string s = get_var_string(variables, name);
-    if(s.length()==0) return 0;
+    if(s.length()==0) return domyslny;
     return atoi(s.c_str());
 }
 
-bool get_var_bool(vector<Variable*>* variables, string name){
+bool get_var_bool(vector<Variable*>* variables, string name, bool domyslny){
     string s = get_var_string(variables, name);
-    if(s.length()==0) return false;
+    if(s.length()==0) return domyslny;
     if(s=="true") return true;
     if(s=="1") return true;
     return false;

@@ -50,6 +50,23 @@ bool version_get(string filename, int &v1, int &v2, int &v3){
     return true;
 }
 
+bool version_save(string filename, int v1, int v2, int v3){
+    //zapis do pliku
+    fstream plik;
+    plik.open(filename.c_str(),fstream::out|fstream::binary);
+    if(!plik.good()){
+        IO::error("blad zapisu do pliku: "+filename);
+        return false;
+    }
+    plik<<"// -- "<<get_time_date()<<" -- (ymake v"<<IO::version<<") --"<<endl;
+    plik<<"#ifndef VERSION_H"<<endl;
+    plik<<"#define VERSION_H"<<endl<<endl;
+    plik<<"#define VERSION \""<<v1<<"."<<v2<<"."<<v3<<"\""<<endl<<endl;
+    plik<<"#endif"<<endl;
+    plik.close();
+    return true;
+}
+
 bool version_inc(string filename){
     int v1=1, v2=0, v3=0;
     //pobranie numeru wersji
@@ -65,21 +82,21 @@ bool version_inc(string filename){
         v2 = 0;
         v1++;
     }
-    //zapis do pliku
-    fstream plik;
-    plik.open(filename.c_str(),fstream::out|fstream::binary);
-    if(!plik.good()){
-        IO::error("blad zapisu do pliku: "+filename);
+    if(version_save(filename, v1, v2, v3)){
+        stringstream ss;
+        ss<<"Zwiekszono numer kolejnej wersji na: "<<v1<<"."<<v2<<"."<<v3;
+        IO::echo(ss.str());
+        return true;
+    }else{
         return false;
     }
-    plik<<"// -- "<<get_time_date()<<" -- (ymake v"<<IO::version<<") --"<<endl;
-    plik<<"#ifndef VERSION_H"<<endl;
-    plik<<"#define VERSION_H"<<endl<<endl;
-    plik<<"#define VERSION \""<<v1<<"."<<v2<<"."<<v3<<"\""<<endl<<endl;
-    plik<<"#endif"<<endl;
-    plik.close();
-    stringstream ss;
-    ss<<"Zwiekszono numer kolejnej wersji na: "<<v1<<"."<<v2<<"."<<v3;
-    IO::echo(ss.str());
-    return true;
+}
+
+bool init_version(){
+    if(version_save("version.h", 1, 0, 1)){
+        IO::echo("Utworzono nowy plik wersji: version.h");
+        return true;
+    }else{
+        return false;
+    }
 }

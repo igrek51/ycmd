@@ -16,9 +16,9 @@ public:
 vector<string>* get_variables_lines(string filename);
 vector<Variable*>* get_variables(string filename);
 
-string get_var_string(vector<Variable*>* variables, string name);
-int get_var_int(vector<Variable*>* variables, string name);
-bool get_var_bool(vector<Variable*>* variables, string name);
+string get_var_string(vector<Variable*>* variables, string name, string domyslny = "");
+int get_var_int(vector<Variable*>* variables, string name, int domyslny = 0);
+bool get_var_bool(vector<Variable*>* variables, string name, bool domyslny = false);
 
 string trim_spaces(string s);
 string trim_quotes(string s);

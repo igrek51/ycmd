@@ -23,32 +23,6 @@ void IO::info(string s){
     echo("[info] - "+s);
 }
 
-void show_help(){
-    cout<<"\t\tycmd wersja "<<IO::version<<endl;
-    cout<<"Polecenia:"<<endl;
-    cout<<"ycmd -e(--exec) [polecenie1] [polecenie2] [...] - wykonaj polecenia"<<endl;
-    cout<<"ycmd -1(--e1) [po le ce nie] - wykonaj jako jedno polecenie"<<endl;
-    cout<<"ycmd -f(--file) [plik] - wykonaj wiersze z pliku (przerwij w przypadku bledu)"<<endl;
-    cout<<"ycmd -y(--ymake) [ymake] - zbuduj na podstawie pliku ymake"<<endl;
-    cout<<"ycmd --ymake-bat [ymake] [build.bat] - utworz plik .bat na podstawie pliku ymake"<<endl;
-    cout<<"ycmd --ymake-makefile [ymake] [Makefile] - utworz plik Makefile na podstawie pliku ymake"<<endl;
-    cout<<"ycmd -t(--time) [polecenie] - zmierz czas wykonania polecenia"<<endl;
-    cout<<"ycmd -i(--input) - czekaj na wpisanie polecenia"<<endl;
-    cout<<"ycmd --clean - wyczysc folder prv\\"<<endl;
-    cout<<"ycmd --run [ymake] - uruchom z pliku ymake"<<endl;
-    cout<<"ycmd --run-start [ymake] - uruchom poleceniem start z pliku ymake"<<endl;
-    cout<<"ycmd --run-shell [ymake] - uruchom poleceniem ShellExecute z pliku ymake"<<endl;
-    cout<<"ycmd --version++ [version.h] - zwieksz numer wersji w pliku"<<endl;
-    cout<<"Opcjonalne parametry:"<<endl;
-    cout<<"-w(--workdir) [dir] - zmien katalog roboczy"<<endl;
-    cout<<"--setenv [var] [value] - ustaw zmienna srodowiskowa"<<endl;
-    cout<<"--setpath [path] - ustaw zmienna srodowiskowa PATH"<<endl;
-    cout<<"--addpath [path] - dodaj do zmiennej srodowiskowej PATH"<<endl;
-    cout<<"-q - wyswietlaj tylko bledy"<<endl;
-    cout<<"-p - czekaj na wcisniecie klawisza po zakonczeniu"<<endl;
-    cout<<"--pe - czekaj na wcisniecie w przypadku bledu"<<endl;
-}
-
 
 vector<string>* get_args(int argc, char **argv){
     vector<string>* args = new vector<string>;

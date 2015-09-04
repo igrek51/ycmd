@@ -1,4 +1,4 @@
-//ymake v1.5.51
+//ymake v1.5.80
 COMPILER = g++
 
 COMPILER_PATH = C:\MinGW\bin

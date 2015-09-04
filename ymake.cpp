@@ -389,3 +389,29 @@ bool clean_all(){
     }
     return true;
 }
+
+bool init_ymake(){
+    string filename = "ymake";
+    //zapis do pliku
+    fstream plik;
+    plik.open(filename.c_str(),fstream::out|fstream::binary);
+    if(!plik.good()){
+        IO::error("blad zapisu do pliku: "+filename);
+        return false;
+    }
+    plik<<"// -- "<<get_time_date()<<" -- (ymake v"<<IO::version<<") --"<<endl;
+    plik<<"COMPILER = g++"<<endl<<endl;
+    plik<<"COMPILER_PATH = C:\\MinGW\\bin"<<endl<<endl;
+    plik<<"SRC_PATH ="<<endl<<endl;
+    plik<<"SRC = *.cpp"<<endl<<endl;
+    plik<<"HEADERS = *.h -version.h"<<endl<<endl;
+    plik<<"OUTPUT = ycmd.exe"<<endl<<endl;
+    plik<<"LIBS ="<<endl<<endl;
+    plik<<"COMPILER_FLAGS = -Wall"<<endl<<endl;
+    plik<<"LINKER_FLAGS = -Wall -s"<<endl<<endl;
+    plik<<"RESOURCE ="<<endl<<endl;
+    plik<<"VERSION_FILE = version.h"<<endl<<endl;
+    plik.close();
+    IO::echo("Utworzono nowy plik ymake");
+    return true;
+}
