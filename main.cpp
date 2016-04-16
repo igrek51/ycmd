@@ -8,7 +8,7 @@
 using namespace std;
 
 int main(int argc, char **argv){
-    //pobranie argumentów do kontenera
+    //pobranie argumentÃ³w do kontenera
     vector<string>* args = get_args(argc, argv);
     //pomoc (brak parametru)
     if(is_arg("--help", args) || is_arg("-h", args) || args->size()==0){

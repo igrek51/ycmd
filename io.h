@@ -21,9 +21,9 @@ vector<string>* get_args(int argc, char **argv);
 int find_arg(string szukany, vector<string>* args);
 bool is_arg(string szukany, vector<string> *args);
 bool next_arg_number(string szukany, vector<string>* args, int &next);
-//wyci¹gniêcie nastêpnego parametru
+//wyciÄ…gniÄ™cie nastÄ™pnego parametru
 bool next_arg(string szukany, vector<string>* args, string &next_text, string domyslny = "");
-//wyci¹gniêcie 2 nastêpnych parametrów
+//wyciÄ…gniÄ™cie 2 nastÄ™pnych parametrÃ³w
 bool next_arg2(string szukany, vector<string>* args, string &next_text1, string &next_text2, string domyslny1 = "", string domyslny2 = "");
 
 bool input_cmd();

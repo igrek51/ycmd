@@ -1,0 +1,13 @@
+przy kompilacji generowanie plików .o (nie .cpp.o) - zamiana rozszerzenia (uciêcie .cpp)
+
+jeœli nie istniej¹ pliki obj - ponowna kompilacja
+czysczenie katalogu obj
+
+obiektowa struktura programu
+
+loglevel: error, warn, info, debug (domyœlny info)
+
+info w logach (zakoñczono czyszczenie)
+
+systemowe funkcje do osobnego modu³u (mkdir, list dir, system, shellexecute)
+2 ga³êzie: windows, linux

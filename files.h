@@ -21,4 +21,6 @@ string dir_format(string dir);
 
 vector<string>* get_files_from_dir(string dir, string ext="");
 
+string remove_file_extension(string filename);
+
 #endif

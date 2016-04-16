@@ -17,7 +17,7 @@ bool ymake(string ymake_filename){
         IO::error("brak poprawnego pliku \""+ymake_filename+"\"");
         return false;
     }
-    //odczytanie z pliku parametr體
+    //odczytanie z pliku parametr贸w
     string ymake_compiler = get_var_string(variables, "COMPILER");
     string ymake_compiler_path = get_var_string(variables, "COMPILER_PATH");
     string ymake_src = get_var_string(variables, "SRC");
@@ -33,7 +33,7 @@ bool ymake(string ymake_filename){
         delete variables->at(i);
     }
     delete variables;
-    //walidacja wczytanych danych, warto渃i domy渓ne
+    //walidacja wczytanych danych, warto艣ci domy艣lne
     if(ymake_compiler.length()==0) ymake_compiler = "g++";
     if(ymake_output.length()==0) ymake_output = "main.exe";
     if(ymake_compiler_path.length()==0){
@@ -55,15 +55,15 @@ bool ymake(string ymake_filename){
         IO::error("pusta lista plikow zrodlowych");
         return false;
     }
-    //lista plik體 headers (dodatkowych plik體 projektu)
+    //lista plik贸w headers (dodatkowych plik贸w projektu)
     vector<string> *headers = get_list_ex(ymake_headers, ymake_src_path);
-    //dodanie 渃ie縦i kompilatora do zmiennej 渞odowiskowej PATH
+    //dodanie 艣cie偶ki kompilatora do zmiennej 艣rodowiskowej PATH
     add_path(ymake_compiler_path);
-    //utworzenie folder體
+    //utworzenie folder贸w
     if(!dir_exists("obj")) system2("mkdir obj");
     if(!dir_exists("prv")) system2("mkdir prv");
     if(!dir_exists("bin")) system2("mkdir bin");
-    //znalezienie zmienionych plik體 h (dodatkowych plik體 projektu)
+    //znalezienie zmienionych plik贸w h (dodatkowych plik贸w projektu)
     bool rebuild = false, change = false;
     for(unsigned int i=0; i<headers->size(); i++){
         if(!file_exists(ymake_src_path + headers->at(i))){
@@ -72,7 +72,7 @@ bool ymake(string ymake_filename){
         }
         if(files_equal(ymake_src_path+headers->at(i),"prv\\"+headers->at(i)))
             continue;
-        //przebudowa ca砮go projektu
+        //przebudowa ca艂ego projektu
         IO::echo("Zmodyfikowany plik: "+ymake_src_path+headers->at(i));
         rebuild = true;
         change = true;
@@ -86,7 +86,7 @@ bool ymake(string ymake_filename){
     if(rebuild){
         IO::echo("Przebudowywanie...");
     }
-    //znalezienie zmienionych plik體 cpp
+    //znalezienie zmienionych plik贸w cpp
     for(unsigned int i=0; i<srcs->size(); i++){
         if(!file_exists(ymake_src_path+srcs->at(i))){
             IO::error("brak pliku zrodlowego "+ymake_src_path+srcs->at(i));
@@ -97,9 +97,9 @@ bool ymake(string ymake_filename){
                 continue;
             change = true;
         }
-        //kompilacja zmienionych plik體
+        //kompilacja zmienionych plik贸w
         stringstream ss;
-        ss<<ymake_compiler<<" -c -o \"obj\\"<<srcs->at(i)<<".o\" "<<ymake_src_path<<srcs->at(i);
+        ss<<ymake_compiler<<" -c -o \"obj\\"<<remove_file_extension(srcs->at(i))<<".o\" "<<ymake_src_path<<srcs->at(i);
         if(ymake_compiler_flags.length()>0) ss<<" "<<ymake_compiler_flags;
         IO::echo("Kompilacja "+srcs->at(i)+": "+ss.str());
         if(!system2(ss.str())){
@@ -119,10 +119,10 @@ bool ymake(string ymake_filename){
             return false;
         }
         //sprawdzenie starej wersji
-        if(!files_equal(ymake_resource,"prv\\"+ymake_resource) || !file_exists("obj\\"+ymake_resource+".o")){
+        if(!files_equal(ymake_resource,"prv\\"+ymake_resource) || !file_exists("obj\\"+remove_file_extension(ymake_resource)+".o")){
             change = true;
             IO::echo("Dodawanie zasobow: "+ymake_resource);
-            if(!system2("windres "+ymake_resource+" \"obj\\"+ymake_resource+".o\""))
+            if(!system2("windres "+ymake_resource+" \"obj\\"+remove_file_extension(ymake_resource)+".o\""))
                 return false;
             if(!copy_files(ymake_resource,"prv\\"+ymake_resource)){
                 IO::error("blad kopiowania do pliku prv\\"+ymake_resource);
@@ -138,13 +138,13 @@ bool ymake(string ymake_filename){
                 return false;
             }
         }
-        //konsolidacja ca硂渃i aplikacji
+        //konsolidacja ca艂o艣ci aplikacji
         stringstream ss2;
         ss2<<ymake_compiler<<" -o \"bin\\"<<ymake_output<<"\"";
         for(unsigned int i=0; i<srcs->size(); i++){
-            ss2<<" \"obj\\"<<srcs->at(i)<<".o\"";
+            ss2<<" \"obj\\"<<remove_file_extension(srcs->at(i))<<".o\"";
         }
-        if(ymake_resource.length()>0) ss2<<" \"obj\\"<<ymake_resource<<".o\"";
+        if(ymake_resource.length()>0) ss2<<" \"obj\\"<<remove_file_extension(ymake_resource)<<".o\"";
         if(ymake_libs.length()>0) ss2<<" "<<ymake_libs;
         if(ymake_linker_flags.length()>0) ss2<<" "<<ymake_linker_flags;
         IO::echo("Konsolidacja: "+ss2.str());
@@ -168,7 +168,7 @@ bool ymake_generate_bat(string ymake_filename, string output_filename){
         IO::error("brak poprawnego pliku \""+ymake_filename+"\"");
         return false;
     }
-    //odczytanie z pliku parametr體
+    //odczytanie z pliku parametr贸w
     string ymake_compiler = get_var_string(variables, "COMPILER");
     string ymake_compiler_path = get_var_string(variables, "COMPILER_PATH");
     string ymake_src = get_var_string(variables, "SRC");
@@ -182,7 +182,7 @@ bool ymake_generate_bat(string ymake_filename, string output_filename){
         delete variables->at(i);
     }
     delete variables;
-    //walidacja wczytanych danych, warto渃i domy渓ne
+    //walidacja wczytanych danych, warto艣ci domy艣lne
     if(ymake_compiler.length()==0) ymake_compiler = "g++";
     if(ymake_output.length()==0) ymake_output = "main.exe";
     if(ymake_compiler_path.length()==0){
@@ -200,33 +200,33 @@ bool ymake_generate_bat(string ymake_filename, string output_filename){
     }
     //lista SRC
     vector<string> *srcs = get_list_ex(ymake_src, ymake_src_path);
-    //dodanie 渃ie縦i kompilatora do zmiennej 渞odowiskowej PATH
+    //dodanie 艣cie偶ki kompilatora do zmiennej 艣rodowiskowej PATH
     output<<"set PATH=%PATH%;"<<ymake_compiler_path<<endl;
-    //utworzenie folder體
+    //utworzenie folder贸w
     output<<"mkdir obj"<<endl;
     output<<"mkdir bin"<<endl;
-    //kompilacja plik體 cpp
+    //kompilacja plik贸w cpp
     for(unsigned int i=0; i<srcs->size(); i++){
-        //kompilacja plik體 cpp
-        output<<ymake_compiler<<" -c -o \"obj\\"<<srcs->at(i)<<".o\" "<<ymake_src_path<<srcs->at(i);
+        //kompilacja plik贸w cpp
+        output<<ymake_compiler<<" -c -o \"obj\\"<<remove_file_extension(srcs->at(i))<<".o\" "<<ymake_src_path<<srcs->at(i);
         if(ymake_compiler_flags.length()>0) output<<" "<<ymake_compiler_flags;
         output<<endl;
     }
     //Zasoby
     if(ymake_resource.length()>0){
-        output<<"windres "<<ymake_resource<<" \"obj\\"<<ymake_resource<<".o\""<<endl;
+        output<<"windres "<<ymake_resource<<" \"obj\\"<<remove_file_extension(ymake_resource)<<".o\""<<endl;
     }
-    //konsolidacja ca硂渃i aplikacji
+    //konsolidacja ca艂o艣ci aplikacji
     output<<ymake_compiler<<" -o \"bin\\"<<ymake_output<<"\"";
     for(unsigned int i=0; i<srcs->size(); i++){
-        output<<" \"obj\\"<<srcs->at(i)<<".o\"";
+        output<<" \"obj\\"<<remove_file_extension(srcs->at(i))<<".o\"";
     }
     delete srcs;
-    if(ymake_resource.length()>0) output<<" \"obj\\"<<ymake_resource<<".o\"";
+    if(ymake_resource.length()>0) output<<" \"obj\\"<<remove_file_extension(ymake_resource)<<".o\"";
     if(ymake_libs.length()>0) output<<" "<<ymake_libs;
     if(ymake_linker_flags.length()>0) output<<" "<<ymake_linker_flags;
     output<<endl;
-    //zapiasnie do pliku wyj渃iowego
+    //zapiasnie do pliku wyj艣ciowego
     ofstream plik;
     plik.open(output_filename.c_str());
     if(!plik.good()){
@@ -248,7 +248,7 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename){
         IO::error("brak poprawnego pliku \""+ymake_filename+"\"");
         return false;
     }
-    //odczytanie z pliku parametr體
+    //odczytanie z pliku parametr贸w
     string ymake_compiler = get_var_string(variables, "COMPILER");
     string ymake_compiler_path = get_var_string(variables, "COMPILER_PATH");
     string ymake_src = get_var_string(variables, "SRC");
@@ -262,7 +262,7 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename){
         delete variables->at(i);
     }
     delete variables;
-    //walidacja wczytanych danych, warto渃i domy渓ne
+    //walidacja wczytanych danych, warto艣ci domy艣lne
     if(ymake_compiler.length()==0) ymake_compiler = "g++";
     if(ymake_output.length()==0) ymake_output = "main.exe";
     if(ymake_compiler_path.length()==0){
@@ -286,7 +286,7 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename){
     if(ymake_compiler_path.length()==0) ymake_compiler_path = ".";
     if(ymake_compiler_path[ymake_compiler_path.length()-1]!='\\') ymake_compiler_path+="\\";
     output<<"CC = "<<ymake_compiler_path<<"mingw32-g++.exe"<<endl;
-    //kompilacja zasob體
+    //kompilacja zasob贸w
     if(ymake_resource.length()>0){
         output<<"WINDRES = "<<ymake_compiler_path<<"windres.exe"<<endl;
     }
@@ -296,10 +296,10 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename){
     output<<"OUTPUT_NAME = "<<ymake_output<<endl;
     output<<"OBJS =";
     for(unsigned int i=0; i<srcs->size(); i++){
-        output<<" obj/"<<srcs->at(i)<<".o";
+        output<<" obj/"<<remove_file_extension(srcs->at(i))<<".o";
     }
     if(ymake_resource.length()>0){
-        output<<" obj/"<<ymake_resource<<".o";
+        output<<" obj/"<<remove_file_extension(ymake_resource)<<".o";
     }
     output<<endl<<endl<<endl;
     //target all
@@ -311,15 +311,15 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename){
     output<<"\tdel /Q $(BIN)\\$(OUTPUT_NAME)"<<endl<<endl<<endl;
     //pojedyncze pliki .o
     for(unsigned int i=0; i<srcs->size(); i++){
-        output<<"obj/"<<srcs->at(i)<<".o: "<<ymake_src_path<<srcs->at(i)<<endl;
-        output<<"\t$(CC) $(CFLAGS) "<<ymake_src_path<<srcs->at(i)<<" -o obj/"<<srcs->at(i)<<".o"<<endl<<endl;
+        output<<"obj/"<<remove_file_extension(srcs->at(i))<<".o: "<<ymake_src_path<<srcs->at(i)<<endl;
+        output<<"\t$(CC) $(CFLAGS) "<<ymake_src_path<<srcs->at(i)<<" -o obj/"<<remove_file_extension(srcs->at(i))<<".o"<<endl<<endl;
     }
     delete srcs;
     if(ymake_resource.length()>0){
-        output<<"obj/"<<ymake_resource<<".o: "<<ymake_resource<<endl;
-        output<<"\t$(WINDRES) resource.rc \"obj/"<<ymake_resource<<".o\""<<endl<<endl;
+        output<<"obj/"<<remove_file_extension(ymake_resource)<<".o: "<<ymake_resource<<endl;
+        output<<"\t$(WINDRES) resource.rc \"obj/"<<remove_file_extension(ymake_resource)<<".o\""<<endl<<endl;
     }
-    //zapiasnie do pliku wyj渃iowego
+    //zapiasnie do pliku wyj艣ciowego
     ofstream plik;
     plik.open(output_filename.c_str());
     if(!plik.good()){
@@ -335,7 +335,7 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename){
 
 bool run_ymake(string ymake_filename, int mode){
     ymake_filename = dir_format(ymake_filename);
-    //odczytanie parametr體 z pliku
+    //odczytanie parametr贸w z pliku
     vector<Variable*>* variables = get_variables(ymake_filename);
     if(variables==NULL){
         IO::error("brak poprawnego pliku \""+ymake_filename+"\"");
@@ -346,7 +346,7 @@ bool run_ymake(string ymake_filename, int mode){
         delete variables->at(i);
     }
     delete variables;
-    //walidacja wczytanych danych, warto渃i domy渓ne
+    //walidacja wczytanych danych, warto艣ci domy艣lne
     if(ymake_output.length()==0) ymake_output = "main.exe";
     //zmiana katalogu roboczego na ./bin
     if(!set_workdir(".\\bin")){
@@ -354,7 +354,7 @@ bool run_ymake(string ymake_filename, int mode){
         return false;
     }
     stringstream ss;
-    if(mode==1){ // zwyk硑 run - system
+    if(mode==1){ // zwyk艂y run - system
         ss<<"\""<<ymake_output<<"\"";
         IO::echo("Uruchamianie: "+ss.str());
         return system2(ss.str());
@@ -399,7 +399,7 @@ bool init_ymake(){
         IO::error("blad zapisu do pliku: "+filename);
         return false;
     }
-    plik<<"// -- "<<get_time_date()<<" -- (ymake v"<<IO::version<<") --"<<endl;
+    plik<<"// -- "<<get_time_date()<<" -- generated by ymake v"<<IO::version<<" --"<<endl;
     plik<<"COMPILER = g++"<<endl<<endl;
     plik<<"COMPILER_PATH = C:\\MinGW\\bin"<<endl<<endl;
     plik<<"SRC_PATH ="<<endl<<endl;

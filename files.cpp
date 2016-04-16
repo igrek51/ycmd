@@ -151,3 +151,13 @@ vector<string>* get_files_from_dir(string dir, string ext){
     FindClose(hFind);
     return files;
 }
+
+
+string remove_file_extension(string filename){
+    size_t lastpos = filename.rfind('.');
+    if(lastpos!=string::npos && lastpos > 0){
+        //usunięcie rozszerzenia
+        filename = filename.substr(0, lastpos);
+    }
+    return filename;
+}

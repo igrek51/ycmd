@@ -15,7 +15,7 @@ void IO::echo(string s, int priority){
 }
 
 void IO::error(string s){
-    echo("[BLAD!] - "+s, 1);
+    echo("[ERROR!] - "+s, 1);
     error_was = true;
 }
 
@@ -45,28 +45,28 @@ bool is_arg(string szukany, vector<string> *args){
 
 bool next_arg_number(string szukany, vector<string>* args, int &next){
     int i = find_arg(szukany, args);
-    if(i==-1) return false; //nie znalaz≥o szukanego argumentu
-    if(i+1 < (int)args->size()){ //jeúli istnieje nastÍpny element
+    if(i==-1) return false; //nie znalaz≈Ço szukanego argumentu
+    if(i+1 < (int)args->size()){ //je≈õli istnieje nastƒôpny element
         next = i + 1;
         return true;
     }else{
         IO::error("Brak parametru po: "+szukany);
-        return false; //nie istnieje nastÍpny element
+        return false; //nie istnieje nastƒôpny element
     }
 }
 
 bool next_arg(string szukany, vector<string>* args, string &next_text, string domyslny){
     int i = find_arg(szukany, args);
-    if(i==-1) return false; //nie znalaz≥o szukanego argumentu
-    if(i+1 < (int)args->size()){ //jeúli istnieje nastÍpny element
+    if(i==-1) return false; //nie znalaz≈Ço szukanego argumentu
+    if(i+1 < (int)args->size()){ //je≈õli istnieje nastƒôpny element
         next_text = args->at(i+1);
         return true;
-    }else{ //nie istnieje nastÍpny element
-        if(domyslny.length()>0){ //zosta≥a podana wartoúÊ domyúlna
+    }else{ //nie istnieje nastƒôpny element
+        if(domyslny.length()>0){ //zosta≈Ça podana warto≈õƒá domy≈õlna
             next_text = domyslny;
             IO::info("Przyjeto domyslna wartosc 1. parametru po \""+szukany+"\": "+domyslny);
             return true;
-        }else{ //brak zdefiniowanej wartoúci domyúlnej
+        }else{ //brak zdefiniowanej warto≈õci domy≈õlnej
             IO::error("Brak parametru po: "+szukany);
             return false;
         }
@@ -75,31 +75,31 @@ bool next_arg(string szukany, vector<string>* args, string &next_text, string do
 
 bool next_arg2(string szukany, vector<string>* args, string &next_text1, string &next_text2, string domyslny1, string domyslny2){
     int i = find_arg(szukany, args);
-    if(i==-1) return false; //nie znalaz≥o szukanego argumentu
-    if(i+2 < (int)args->size()){ //jeúli istniejπ 2 nastÍpne elementy
+    if(i==-1) return false; //nie znalaz≈Ço szukanego argumentu
+    if(i+2 < (int)args->size()){ //je≈õli istniejƒÖ 2 nastƒôpne elementy
         next_text1 = args->at(i+1);
         next_text2 = args->at(i+2);
         return true;
-    }else if(i+1 < (int)args->size()){ //istnieje 1 nastÍpny element
-        if(domyslny2.length()>0){ //zosta≥a podana 2. wartoúÊ domyúlna
+    }else if(i+1 < (int)args->size()){ //istnieje 1 nastƒôpny element
+        if(domyslny2.length()>0){ //zosta≈Ça podana 2. warto≈õƒá domy≈õlna
             next_text1 = args->at(i+1);
             next_text2 = domyslny2;
             IO::info("Przyjeto domyslna wartosc 2. parametru po \""+szukany+"\": "+domyslny2);
             return true;
-        }else{ //brak zdefiniowanych wartoúci domyúlnych
+        }else{ //brak zdefiniowanych warto≈õci domy≈õlnych
             IO::error("Brak drugiego parametru po "+szukany);
-            return false; //nie istniejπ oba
+            return false; //nie istniejƒÖ oba
         }
-    }else{ //nie istnieje øodyn nastÍpny
-        if(domyslny1.length()>0 && domyslny2.length()>0){ //podane obie wartoúci domyúlne
+    }else{ //nie istnieje ≈ºodyn nastƒôpny
+        if(domyslny1.length()>0 && domyslny2.length()>0){ //podane obie warto≈õci domy≈õlne
             next_text1 = domyslny1;
             next_text2 = domyslny2;
             IO::info("Przyjeto domyslna wartosc 1. parametru po \""+szukany+"\": "+domyslny1);
             IO::info("Przyjeto domyslna wartosc 2. parametru po \""+szukany+"\": "+domyslny2);
             return true;
-        }else{ //brak zdefiniowanych wartoúci domyúlnych
+        }else{ //brak zdefiniowanych warto≈õci domy≈õlnych
             IO::error("Brak 2 parametrow po "+szukany);
-            return false; //nie istniejπ oba
+            return false; //nie istniejƒÖ oba
         }
     }
 }

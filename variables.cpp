@@ -13,10 +13,10 @@ vector<string>* get_variables_lines(string filename){
     vector<string>* lines = get_all_lines(filename);
     if(lines==NULL) return NULL;
     for(int i=0; i<(int)lines->size(); i++){
-        if(lines->at(i).length()==0){ //usuniÍcie pustych elementÛw
+        if(lines->at(i).length()==0){ //usuniƒôcie pustych element√≥w
             lines->erase(lines->begin()+i);
             i--;
-        }else if(lines->at(i).length()>=2){ //usuniÍcie komentarzy
+        }else if(lines->at(i).length()>=2){ //usuniƒôcie komentarzy
             if(lines->at(i)[0]=='/' && lines->at(i)[1]=='/'){
                 lines->erase(lines->begin()+i);
                 i--;
@@ -30,7 +30,7 @@ vector<Variable*>* get_variables(string filename){
     vector<string>* lines = get_variables_lines(filename);
     if(lines==NULL) return NULL;
     vector<Variable*>* variables = new vector<Variable*>;
-    //wy≥uskanie nazwy i wartoúci
+    //wy≈Çuskanie nazwy i warto≈õci
     for(unsigned int i=0; i<lines->size(); i++){
         //szukanie znaku =
         for(unsigned int j=1; j<lines->at(i).length(); j++){
@@ -76,11 +76,11 @@ bool get_var_bool(vector<Variable*>* variables, string name, bool domyslny){
 
 
 string trim_spaces(string s){
-    //obciÍcie spacji na koÒcu
+    //obciƒôcie spacji na ko≈Ñcu
     while(s.length() > 0  && s[s.length()-1] == ' '){
         s = s.substr(0, s.length()-1);
     }
-    //obciÍcie spacji na poczπtku
+    //obciƒôcie spacji na poczƒÖtku
     while(s.length() > 0  && s[0] == ' '){
         s = s.substr(1);
     }
@@ -89,11 +89,11 @@ string trim_spaces(string s){
 
 string trim_quotes(string s){
     if(s.length()>=3){
-        //jeúli cudzys≥owy sπ na poczatku i na koÒcu
+        //je≈õli cudzys≈Çowy sƒÖ na poczatku i na ko≈Ñcu
         if(s[0]=='\"' && s[s.length()-1]=='\"'){
-            //jeúli w ca≥ym stringu znajdujπ siÍ tylko 2 cudzys≥owy
+            //je≈õli w ca≈Çym stringu znajdujƒÖ siƒô tylko 2 cudzys≈Çowy
             if(s.substr(1, s.length()-2).find('\"')==string::npos){
-                s = s.substr(1, s.length()-2); //usuÒ je
+                s = s.substr(1, s.length()-2); //usu≈Ñ je
             }
         }
     }
@@ -105,7 +105,7 @@ vector<string>* get_list(string lista){
     vector<string>* kontener = new vector<string>;
     lista = trim_spaces(lista);
     if(lista.length()==0) return kontener;
-    //podzia≥ przez spacje lub przecinki (nie przez cudzys≥owy)
+    //podzia≈Ç przez spacje lub przecinki (nie przez cudzys≈Çowy)
     bool cudzyslow = false;
     for(int i=0; i<(int)lista.length(); i++){
         if(lista[i]=='\"') cudzyslow = !cudzyslow;
@@ -123,7 +123,7 @@ vector<string>* get_list(string lista){
 vector<string>* get_list_ex(string lista, string dir){
     vector<string>* kontener = get_list(lista);
     for(unsigned int i=0; i<kontener->size(); i++){
-        //obetnij plusy z poczπtku
+        //obetnij plusy z poczƒÖtku
         if(kontener->at(i)[0]=='+'){
             kontener->at(i).erase(0, 1);
         }
@@ -132,11 +132,11 @@ vector<string>* get_list_ex(string lista, string dir){
             kontener->at(i) = kontener->at(i).substr(1, kontener->at(i).length()-2);
         }
     }
-    //dodawanie elementÛw z gwiazdkπ
+    //dodawanie element√≥w z gwiazdkƒÖ
     for(unsigned int i=0; i<kontener->size(); i++){
         if(kontener->at(i)[0]=='*'){ //dodaj wszystko (wszystko z podanym rozszerzeniem)
             string ext = kontener->at(i).substr(1, kontener->at(i).length()-1);
-            //zastπp ten element pasujπcymi plikami z folderu
+            //zastƒÖp ten element pasujƒÖcymi plikami z folderu
             kontener->erase(kontener->begin() + i);
             vector<string>* pliki = get_files_from_dir(dir, ext);
             for(unsigned j=0; j<pliki->size(); j++){
@@ -146,11 +146,11 @@ vector<string>* get_list_ex(string lista, string dir){
             i--;
         }
     }
-    //odejmowanie elementÛw
+    //odejmowanie element√≥w
     for(int i=0; i<(int)kontener->size(); i++){
         if(kontener->at(i)[0]=='-'){
             string elem_usun = kontener->at(i).substr(1, kontener->at(i).length()-1);
-            //usuÒ ten element i wszystkie jego wystπpienia
+            //usu≈Ñ ten element i wszystkie jego wystƒÖpienia
             kontener->erase(kontener->begin() + i);
             remove_from_list(kontener, elem_usun);
             //szukaj od nowa
@@ -161,7 +161,7 @@ vector<string>* get_list_ex(string lista, string dir){
 }
 
 void add_to_list(vector<string>* kontener, string elem){
-    //jeúli juø istnieje
+    //je≈õli ju≈º istnieje
     for(unsigned int i=0; i<kontener->size(); i++){
         if(kontener->at(i)==elem)
             return;
@@ -170,7 +170,7 @@ void add_to_list(vector<string>* kontener, string elem){
 }
 
 void remove_from_list(vector<string>* kontener, string elem){
-    //usuÒ wszystkie jego wystπpienia
+    //usu≈Ñ wszystkie jego wystƒÖpienia
     for(int j=0; j<(int)kontener->size(); j++){
         if(kontener->at(j)==elem){
             kontener->erase(kontener->begin() + j);
