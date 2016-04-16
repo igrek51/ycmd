@@ -18,10 +18,20 @@ vector<string>* get_variables_lines(string filename){
         if(lines->at(i).length()==0){ //usunięcie pustych elementów
             lines->erase(lines->begin()+i);
             i--;
-        }else if(lines->at(i).length()>=2){ //usunięcie komentarzy
+            continue;
+        }
+        if(lines->at(i).length()>=1){ //usunięcie komentarzy #
+            if(lines->at(i)[0]=='#'){
+                lines->erase(lines->begin()+i);
+                i--;
+                continue;
+            }
+        }
+        if(lines->at(i).length()>=2){ //usunięcie komentarzy //
             if(lines->at(i)[0]=='/' && lines->at(i)[1]=='/'){
                 lines->erase(lines->begin()+i);
                 i--;
+                continue;
             }
         }
     }
