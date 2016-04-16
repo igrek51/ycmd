@@ -29,7 +29,9 @@ int main(int argc, char **argv){
 			Log::info("Pomyslnie zakonczono program...");
 		}
         getch();
-	}
+	}else{
+        Log::debug("Zakonczono.");
+    }
     delete args;
     if(Log::errors_count > 0) return 1;
 	return 0;

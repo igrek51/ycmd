@@ -46,7 +46,7 @@ bool ymake(string ymake_filename){
         if(files_equal(file_header, file_header_prv))
             continue;
         //przebudowa całego projektu
-        Log::info("Zmodyfikowany plik naglowkowy: "+file_header);
+        Log::debug("Zmodyfikowany plik naglowkowy: "+file_header);
         rebuild = true;
         change = true;
         //skopiowanie nowej wersji z nadpisaniem
@@ -145,6 +145,7 @@ bool ymake(string ymake_filename){
             Log::error("blad konsolidacji aplikacji");
             return false;
         }
+        Log::debug("Zakonczono budowanie.");
     }else{
         Log::info("Brak zmian do wprowadzenia.");
     }
@@ -336,6 +337,7 @@ bool clean_all(){
     Log::info("Czyszczenie...");
     if(!clean_dir("prv")) return false;
     if(!clean_dir("obj")) return false;
+    Log::debug("Zakonczono czyszczenie...");
     return true;
 }
 
@@ -361,6 +363,6 @@ bool init_ymake(){
     plik<<"RESOURCE ="<<endl<<endl;
     plik<<"VERSION_FILE = version.h"<<endl<<endl;
     plik.close();
-    Log::info("Utworzono nowy plik ymake");
+    Log::info("Utworzono nowy plik ymake.");
     return true;
 }

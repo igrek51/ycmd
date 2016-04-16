@@ -13,6 +13,18 @@ bool exec_commands(vector<string> *args){
     string next1;
     string next2;
     int next;
+    //log level
+    if(is_arg("--log=debug", args)){
+        Log::log_level = Log::DEBUG;
+    }else if(is_arg("--log=info", args)){
+        Log::log_level = Log::INFO;
+    }else if(is_arg("--log=warn", args)){
+        Log::log_level = Log::WARN;
+    }else if(is_arg("--log=error", args)){
+        Log::log_level = Log::ERROR;
+    }else if(is_arg("--log=off", args)){
+        Log::log_level = Log::OFF;
+    }
     //zmiana katalogu roboczego
     if(next_arg("-w", args, next1) || next_arg("--workdir", args, next1)){
         if(!set_workdir(next1)){
@@ -134,7 +146,7 @@ void show_help(){
     cout<<"--setenv [var] [value] - ustaw zmienna srodowiskowa"<<endl;
     cout<<"--setpath [path] - ustaw zmienna srodowiskowa PATH"<<endl;
     cout<<"--addpath [path] - dodaj do zmiennej srodowiskowej PATH"<<endl;
-    cout<<"-q - wyswietlaj tylko bledy"<<endl;
+    cout<<"--log=[debug|info|warn|error|off] - poziom wyswietlania komunikatów"<<endl;
     cout<<"-p - czekaj na wcisniecie klawisza po zakonczeniu"<<endl;
     cout<<"--pe - czekaj na wcisniecie w przypadku bledu"<<endl;
 }

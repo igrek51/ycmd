@@ -1,24 +1,24 @@
 #include "log.h"
 
-int Log::log_level = 3;
+int Log::log_level = INFO;
 int Log::errors_count = 0;
 
 
 void Log::error(string s){
-    echo("[ERROR] " + s, 1);
+    echo("[ERROR] " + s, ERROR);
     errors_count++;
 }
 
 void Log::warn(string s){
-    echo("[warn] " + s, 2);
+    echo("[warn] " + s, WARN);
 }
 
 void Log::info(string s){
-    echo(s, 3);
+    echo(s, INFO);
 }
 
 void Log::debug(string s){
-    echo("[debug] " + s, 4);
+    echo("[debug] " + s, DEBUG);
 }
 
 bool Log::isError(){
@@ -28,7 +28,7 @@ bool Log::isError(){
 void Log::echo(string s, int level){
     if(level > log_level) return;
     cout<<s<<endl;
-    if(level == 1){ //ERROR
+    if(level == ERROR){
         cerr<<s<<endl;
     }
 }
