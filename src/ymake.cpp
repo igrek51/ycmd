@@ -5,150 +5,136 @@
 #include "io.h"
 #include "system.h"
 #include "string_utils.h"
+#include "ymake_data.h"
+#include "path.h"
 
 #include <fstream>
 #include <sstream>
 #include <windows.h>
 
 bool ymake(string ymake_filename){
-    ymake_filename = dir_format(ymake_filename);
     Log::info("ymake v"+IO::version+":");
-    vector<Variable*>* variables = get_variables(ymake_filename);
-    if(variables==NULL){
-        Log::error("brak poprawnego pliku \""+ymake_filename+"\"");
-        return false;
-    }
-    //odczytanie z pliku parametrów
-    string ymake_compiler = get_var_string(variables, "COMPILER");
-    string ymake_compiler_path = get_var_string(variables, "COMPILER_PATH");
-    string ymake_src = get_var_string(variables, "SRC");
-    string ymake_headers = get_var_string(variables, "HEADERS");
-    string ymake_src_path = get_var_string(variables, "SRC_PATH");
-    string ymake_output = get_var_string(variables, "OUTPUT");
-    string ymake_libs = get_var_string(variables, "LIBS");
-    string ymake_compiler_flags = get_var_string(variables, "COMPILER_FLAGS");
-    string ymake_linker_flags = get_var_string(variables, "LINKER_FLAGS");
-    string ymake_resource = get_var_string(variables, "RESOURCE");
-    string ymake_version_file = get_var_string(variables, "VERSION_FILE");
-    for(unsigned int i=0; i<variables->size(); i++){
-        delete variables->at(i);
-    }
-    delete variables;
-    //walidacja wczytanych danych, wartości domyślne
-    if(ymake_compiler.length()==0) ymake_compiler = "g++";
-    if(ymake_output.length()==0) ymake_output = "main.exe";
-    if(ymake_compiler_path.length()==0){
-        Log::error("Brak sciezki do kompilatora (COMPILER_PATH)");
-        return false;
-    }
-    if(ymake_src.length()==0){
-        Log::error("Brak plikow zrodlowych (SRC)");
-        return false;
-    }
-    //format ymake_src_path
-    if(ymake_src_path.length()>0){
-        if(ymake_src_path[ymake_src_path.length()-1]!='\\') ymake_src_path+='\\';
-        if(ymake_src_path=="\\"||ymake_src_path==".\\") ymake_src_path = "";
-    }
+
+    YmakeData* ymake = new YmakeData(ymake_filename);
+    if(Log::isError() || !ymake->validate()) return false;
+
     //lista SRC
-    vector<string> *srcs = get_list_ex(ymake_src, ymake_src_path);
+    vector<string>* srcs = ymake->getSources();
     if(srcs->size()==0){
-        Log::error("pusta lista plikow zrodlowych");
+        Log::error("Lista plikow zrodlowych jest pusta");
         return false;
     }
-    //lista plików headers (dodatkowych plików projektu)
-    vector<string> *headers = get_list_ex(ymake_headers, ymake_src_path);
+    //lista plików nagłówkowych
+    vector<string>* headers = ymake->getHeaders();
+
     //dodanie ścieżki kompilatora do zmiennej środowiskowej PATH
-    add_path(ymake_compiler_path);
+    add_env_path(ymake->compiler_path);
+
     //utworzenie folderów
     mkdir_if_n_exist("obj");
     mkdir_if_n_exist("prv");
     mkdir_if_n_exist("bin");
-    //znalezienie zmienionych plików h (dodatkowych plików projektu)
+
+    //znalezienie zmienionych plików nagłówkowych
     bool rebuild = false, change = false;
     for(unsigned int i=0; i<headers->size(); i++){
-        if(!file_exists(ymake_src_path + headers->at(i))){
-            Log::error("brak pliku: "+ymake_src_path+headers->at(i));
+        string file_header = Path::append(ymake->src_path, headers->at(i));
+        string file_header_prv = Path::append("prv", headers->at(i));
+        if(!file_exists(file_header)){
+            Log::error("brak pliku: "+file_header);
             return false;
         }
-        if(files_equal(ymake_src_path+headers->at(i),"prv\\"+headers->at(i)))
+        if(files_equal(file_header, file_header_prv))
             continue;
         //przebudowa całego projektu
-        Log::info("Zmodyfikowany plik: "+ymake_src_path+headers->at(i));
+        Log::info("Zmodyfikowany plik naglowkowy: "+file_header);
         rebuild = true;
         change = true;
         //skopiowanie nowej wersji z nadpisaniem
-        if(!copy_files(ymake_src_path+headers->at(i),"prv\\"+headers->at(i))){
-            Log::error("blad kopiowania do pliku prv\\"+headers->at(i));
+        if(!copy_files(file_header, file_header_prv)){
+            Log::error("blad kopiowania do pliku " + file_header_prv);
             return false;
         }
     }
     delete headers;
+
     if(rebuild){
         Log::info("Przebudowywanie...");
     }
+
+    vector<string>* objs = new vector<string>();
+
     //znalezienie zmienionych plików cpp
     for(unsigned int i=0; i<srcs->size(); i++){
-        if(!file_exists(ymake_src_path+srcs->at(i))){
-            Log::error("brak pliku zrodlowego "+ymake_src_path+srcs->at(i));
+        string file_src = Path::append(ymake->src_path, srcs->at(i));
+        string file_src_prv = Path::append("prv", srcs->at(i));
+        if(!file_exists(file_src)){
+            Log::error("brak pliku zrodlowego "+file_src);
             return false;
         }
         if(!rebuild){
-            if(files_equal(ymake_src_path+srcs->at(i),"prv\\"+srcs->at(i)))
+            if(files_equal(file_src, file_src_prv))
                 continue;
             change = true;
         }
         //kompilacja zmienionych plików
         stringstream ss;
-        ss<<ymake_compiler<<" -c -o \"obj\\"<<remove_extension(srcs->at(i))<<".o\" "<<ymake_src_path<<srcs->at(i);
-        if(ymake_compiler_flags.length()>0) ss<<" "<<ymake_compiler_flags;
-        Log::info("Kompilacja "+srcs->at(i)+": "+ss.str());
+        string file_src_obj = Path::append("obj", Path::removeExtenstion(srcs->at(i))) + ".o";
+        ss<<ymake->compiler<<" -c -o \""<<file_src_obj<<"\" "<<file_src;
+        if(ymake->compiler_flags.length()>0) ss<<" "<<ymake->compiler_flags;
+        Log::info("Kompilacja "+file_src+": "+ss.str());
         if(!system2(ss.str())){
-            Log::error("blad kompilacji pliku: "+srcs->at(i));
+            Log::error("blad kompilacji pliku: "+file_src);
             return false;
         }
+        objs->push_back(file_src_obj);
         //skopiowanie nowej wersji z nadpisaniem
-        if(!copy_files(ymake_src_path+srcs->at(i),"prv\\"+srcs->at(i))){
-            Log::error("blad kopiowania do pliku prv\\"+srcs->at(i));
+        if(!copy_files(file_src, file_src_prv)){
+            Log::error("blad kopiowania do pliku " + file_src_prv);
             return false;
         }
     }
     //Zasoby
-    if(ymake_resource.length()>0){
-        if(!file_exists(ymake_resource)){
-            Log::error("brak pliku zasobow: "+ymake_resource);
+    if(ymake->resource.length()>0){
+        if(!file_exists(ymake->resource)){
+            Log::error("brak pliku zasobow: " + ymake->resource);
             return false;
         }
         //sprawdzenie starej wersji
-        if(!files_equal(ymake_resource,"prv\\"+ymake_resource) || !file_exists("obj\\"+remove_extension(ymake_resource)+".o")){
+        string resource_prv = Path::append("prv", ymake->resource);
+        string resource_obj = Path::append("obj", Path::removeExtenstion(ymake->resource)) + ".o";
+        if(!files_equal(ymake->resource, resource_prv) || !file_exists(resource_obj)){
             change = true;
-            Log::info("Dodawanie zasobow: "+ymake_resource);
-            if(!system2("windres "+ymake_resource+" \"obj\\"+remove_extension(ymake_resource)+".o\""))
+            Log::info("Dodawanie zasobow: "+ymake->resource);
+            if(!system2("windres "+ymake->resource+" \""+resource_obj+"\""))
                 return false;
-            if(!copy_files(ymake_resource,"prv\\"+ymake_resource)){
-                Log::error("blad kopiowania do pliku prv\\"+ymake_resource);
+            objs->push_back(resource_obj);
+            if(!copy_files(ymake->resource, resource_prv)){
+                Log::error("blad kopiowania do pliku " + resource_prv);
                 return false;
             }
         }
     }
-    //inkrementacja wersji
     if(change || rebuild){
-        ymake_version_file = ymake_src_path + ymake_version_file;
-        if(ymake_version_file.length()>0){
-            if(!version_inc(dir_format(ymake_version_file))){
-                Log::error("blad inkrementacji wersji w pliku: "+ymake_version_file);
+        //inkrementacja wersji
+        if(ymake->version_file.length()>0){
+            string version_file_1 = Path::append(ymake->src_path, ymake->version_file);
+            if(!version_inc(version_file_1)){
+                Log::error("blad inkrementacji wersji w pliku: "+version_file_1);
                 return false;
             }
         }
+
         //konsolidacja całości aplikacji
         stringstream ss2;
-        ss2<<ymake_compiler<<" -o \"bin\\"<<ymake_output<<"\"";
-        for(unsigned int i=0; i<srcs->size(); i++){
-            ss2<<" \"obj\\"<<remove_extension(srcs->at(i))<<".o\"";
+        string bin_filename = Path::append("bin", ymake->output);
+        ss2<<ymake->compiler<<" -o \""<<bin_filename<<"\"";
+        for(unsigned int i=0; i<objs->size(); i++){
+            ss2<<" \""<<objs->at(i)<<"\"";
         }
-        if(ymake_resource.length()>0) ss2<<" \"obj\\"<<remove_extension(ymake_resource)<<".o\"";
-        if(ymake_libs.length()>0) ss2<<" "<<ymake_libs;
-        if(ymake_linker_flags.length()>0) ss2<<" "<<ymake_linker_flags;
+
+        if(ymake->libs.length()>0) ss2<<" "<<ymake->libs;
+        if(ymake->linker_flags.length()>0) ss2<<" "<<ymake->linker_flags;
         Log::info("Konsolidacja: "+ss2.str());
         if(!system2(ss2.str())){
             Log::error("blad konsolidacji aplikacji");
@@ -162,8 +148,8 @@ bool ymake(string ymake_filename){
 }
 
 bool ymake_generate_bat(string ymake_filename, string output_filename){
-    ymake_filename = dir_format(ymake_filename);
-    output_filename = dir_format(output_filename);
+    ymake_filename = format_filename(ymake_filename);
+    output_filename = format_filename(output_filename);
     stringstream output;
     vector<Variable*>* variables = get_variables(ymake_filename);
     if(variables==NULL){
@@ -243,8 +229,8 @@ bool ymake_generate_bat(string ymake_filename, string output_filename){
 }
 
 bool ymake_generate_makefile(string ymake_filename, string output_filename){
-    ymake_filename = dir_format(ymake_filename);
-    output_filename = dir_format(output_filename);
+    ymake_filename = format_filename(ymake_filename);
+    output_filename = format_filename(output_filename);
     vector<Variable*>* variables = get_variables(ymake_filename);
     if(variables==NULL){
         Log::error("brak poprawnego pliku \""+ymake_filename+"\"");
@@ -336,7 +322,7 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename){
 }
 
 bool run_ymake(string ymake_filename, int mode){
-    ymake_filename = dir_format(ymake_filename);
+    ymake_filename = format_filename(ymake_filename);
     //odczytanie parametrów z pliku
     vector<Variable*>* variables = get_variables(ymake_filename);
     if(variables==NULL){

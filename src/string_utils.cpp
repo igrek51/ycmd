@@ -44,28 +44,3 @@ vector<string>* get_param_list(string lista){
     if(lista.length()>0) kontener->push_back(lista);
     return kontener;
 }
-
-
-bool ends_with(string name, string ext){
-    if(ext.length()==0) return true;
-    if(ext.length() > name.length()) return false;
-    name = name.substr(name.length()-ext.length(),ext.length());
-    if(name==ext) return true;
-    return false;
-}
-
-string remove_extension(string filename){
-    size_t lastpos = filename.rfind('.');
-    if(lastpos!=string::npos && lastpos > 0){
-        //usunięcie rozszerzenia
-        filename = filename.substr(0, lastpos);
-    }
-    return filename;
-}
-
-string dir_format(string dir){
-    for(unsigned int i=0; i<dir.length(); i++){
-        if(dir[i]=='/') dir[i]='\\';
-    }
-    return dir;
-}

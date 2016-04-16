@@ -5,6 +5,7 @@
 #include "versioning.h"
 #include "ymake.h"
 #include "string_utils.h"
+#include "path.h"
 
 #include <sstream>
 
@@ -26,7 +27,7 @@ bool exec_commands(vector<string> *args){
         return set_env("PATH", next1);
     }
     if(next_arg("--addpath", args, next1)){ //zmienna środowiskowa PATH
-        if(!add_path(next1)){
+        if(!add_env_path(next1)){
             Log::error("blad dodawania do zmiennej srodowiskowej PATH");
             return false;
         }
@@ -99,7 +100,7 @@ bool exec_commands(vector<string> *args){
     }else if(is_arg("--clean", args)){ //wyczysc folder prv
         return clean_all();
     }else if(next_arg("--version++", args, next1, "version.h")){ //zwiększ wersję w pliku
-        return version_inc(dir_format(next1));
+        return version_inc(Path::reformat(next1));
     }else if(is_arg("--test", args)){
 
     }else{

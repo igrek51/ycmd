@@ -21,6 +21,9 @@ void Log::debug(string s){
     echo("[debug] " + s, 4);
 }
 
+bool Log::isError(){
+    return errors_count > 0;
+}
 
 void Log::echo(string s, int level){
     if(level > log_level) return;

@@ -9,7 +9,7 @@ bool system2(string cmd);
 bool system_echo(string cmd);
 
 bool set_env(string variable, string value);
-bool add_path(string new_path);
+bool add_env_path(string new_path);
 
 bool set_workdir(string wd);
 

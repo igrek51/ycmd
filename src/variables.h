@@ -22,7 +22,7 @@ bool get_var_bool(vector<Variable*>* variables, string name, bool domyslny = fal
 
 vector<string>* get_list_ex(string lista, string dir);
 
-void add_to_list(vector<string>* kontener, string elem);
+void add_to_set(vector<string>* kontener, string elem);
 void remove_from_list(vector<string>* kontener, string elem);
 
 #endif

@@ -18,7 +18,9 @@ SOURCES +=\
     src/commands.cpp \
     src/variables.cpp \
     src/string_utils.cpp \
-    src/log.cpp
+    src/log.cpp \
+    src/ymake_data.cpp \
+    src/path.cpp
 
 
 HEADERS += \
@@ -31,5 +33,7 @@ HEADERS += \
     src/variables.h \
     src/version.h \
     src/string_utils.h \
-    src/log.h
+    src/log.h \
+    src/ymake_data.h \
+    src/path.h
 

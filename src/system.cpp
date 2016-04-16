@@ -27,7 +27,7 @@ bool set_env(string variable, string value){
     return true;
 }
 
-bool add_path(string new_path){
+bool add_env_path(string new_path){
     char *env_path = new char [1024];
     if(GetEnvironmentVariable("PATH",env_path,1024)==0){
         delete env_path;
@@ -40,7 +40,7 @@ bool add_path(string new_path){
 }
 
 bool set_workdir(string wd){
-    wd = dir_format(wd);
+    wd = format_filename(wd);
     if(!SetCurrentDirectory(wd.c_str())){
         Log::error("Blad zmiany katalogu roboczego: "+wd);
         return false;

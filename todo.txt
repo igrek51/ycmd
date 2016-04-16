@@ -8,6 +8,8 @@ opakowywanie w ""
 
 pliki Ÿród³owe w podfolderach
 
+test z zasobami w katalogu res
+
 opis linijek ymake przy tworzeniu nowego (init), sprawdzenie, czy siê zapisz¹
 
 obs³uga przecinków przy listach

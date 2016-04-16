@@ -2,6 +2,7 @@
 #include "io.h"
 #include "string_utils.h"
 #include "system.h"
+#include "path.h"
 
 #include <fstream>
 #include <windows.h>
@@ -71,7 +72,7 @@ bool delete_file(string filename){
 
 
 vector<string>* get_all_lines(string filename){
-    filename = dir_format(filename);
+    filename = Path::reformat(filename);
     fstream plik;
     plik.open(filename.c_str(),fstream::in|fstream::binary);
     if(!plik.good()){

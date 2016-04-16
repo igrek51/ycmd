@@ -2,6 +2,7 @@
 #include "files.h"
 #include "io.h"
 #include "string_utils.h"
+#include "path.h"
 
 #include <cstdlib>
 
@@ -84,9 +85,7 @@ vector<string>* get_list_ex(string lista, string dir){
             kontener->at(i).erase(0, 1);
         }
         //utnij cudzyslowy po obu stronach
-        if(kontener->at(i).length()>=3 && kontener->at(i)[0]=='\"' && kontener->at(i)[kontener->at(i).length()-1]=='\"'){
-            kontener->at(i) = kontener->at(i).substr(1, kontener->at(i).length()-2);
-        }
+        kontener->at(i) = Path::reformat(trim_quotes(kontener->at(i)));
     }
     //dodawanie elementów z gwiazdką
     for(unsigned int i=0; i<kontener->size(); i++){
@@ -96,7 +95,7 @@ vector<string>* get_list_ex(string lista, string dir){
             kontener->erase(kontener->begin() + i);
             vector<string>* pliki = get_files_from_dir(dir, ext);
             for(unsigned j=0; j<pliki->size(); j++){
-                add_to_list(kontener, pliki->at(j));
+                add_to_set(kontener, Path::reformat(pliki->at(j)));
             }
             delete pliki;
             i--;
@@ -116,7 +115,7 @@ vector<string>* get_list_ex(string lista, string dir){
     return kontener;
 }
 
-void add_to_list(vector<string>* kontener, string elem){
+void add_to_set(vector<string>* kontener, string elem){
     //jeśli już istnieje
     for(unsigned int i=0; i<kontener->size(); i++){
         if(kontener->at(i)==elem)
