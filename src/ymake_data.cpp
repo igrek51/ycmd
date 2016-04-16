@@ -5,7 +5,7 @@
 #include "path.h"
 
 YmakeData::YmakeData(string filename){
-    filename = format_filename(filename);
+    filename = Path::reformat(filename);
     vector<Variable*>* variables = get_variables(filename);
     if(variables==NULL){
         Log::error("brak poprawnego pliku \""+filename+"\"");
@@ -49,6 +49,7 @@ bool YmakeData::validate(){
     }
     resource = Path::reformat(resource);
     version_file = Path::reformat(version_file);
+    return true;
 }
 
 vector<string>* YmakeData::getSources(){

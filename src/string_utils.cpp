@@ -44,3 +44,12 @@ vector<string>* get_param_list(string lista){
     if(lista.length()>0) kontener->push_back(lista);
     return kontener;
 }
+
+
+bool ends_with(string name, string ext){
+    if(ext.length()==0) return true;
+    if(ext.length() > name.length()) return false;
+    name = name.substr(name.length()-ext.length(),ext.length());
+    if(name==ext) return true;
+    return false;
+}

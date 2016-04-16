@@ -11,4 +11,6 @@ string trim_quotes(string s);
 
 vector<string>* get_param_list(string lista);
 
+bool ends_with(string name, string ext);
+
 #endif

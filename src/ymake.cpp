@@ -72,14 +72,17 @@ bool ymake(string ymake_filename){
             Log::error("brak pliku zrodlowego "+file_src);
             return false;
         }
+        string file_src_obj = Path::append("obj", Path::removeExtenstion(srcs->at(i))) + ".o";
         if(!rebuild){
-            if(files_equal(file_src, file_src_prv))
-                continue;
+            if(file_exists(file_src_obj)){
+                if(files_equal(file_src, file_src_prv)){
+                    continue;
+                }
+            }
             change = true;
         }
         //kompilacja zmienionych plików
         stringstream ss;
-        string file_src_obj = Path::append("obj", Path::removeExtenstion(srcs->at(i))) + ".o";
         ss<<ymake->compiler<<" -c -o \""<<file_src_obj<<"\" "<<file_src;
         if(ymake->compiler_flags.length()>0) ss<<" "<<ymake->compiler_flags;
         Log::info("Kompilacja "+file_src+": "+ss.str());
@@ -144,12 +147,14 @@ bool ymake(string ymake_filename){
         Log::info("Brak zmian do wprowadzenia.");
     }
     delete srcs;
+    delete objs;
     return true;
 }
 
 bool ymake_generate_bat(string ymake_filename, string output_filename){
-    ymake_filename = format_filename(ymake_filename);
-    output_filename = format_filename(output_filename);
+    /*
+    ymake_filename = Path::reformat(ymake_filename);
+    output_filename = Path::reformat(output_filename);
     stringstream output;
     vector<Variable*>* variables = get_variables(ymake_filename);
     if(variables==NULL){
@@ -225,12 +230,14 @@ bool ymake_generate_bat(string ymake_filename, string output_filename){
     plik<<output.str();
     plik.close();
     Log::info("Wygenerowano plik: "+output_filename);
+    */
     return true;
 }
 
 bool ymake_generate_makefile(string ymake_filename, string output_filename){
-    ymake_filename = format_filename(ymake_filename);
-    output_filename = format_filename(output_filename);
+    /*
+    ymake_filename = Path::reformat(ymake_filename);
+    output_filename = Path::reformat(output_filename);
     vector<Variable*>* variables = get_variables(ymake_filename);
     if(variables==NULL){
         Log::error("brak poprawnego pliku \""+ymake_filename+"\"");
@@ -318,75 +325,61 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename){
     plik<<output.str();
     plik.close();
     Log::info("Wygenerowano plik: "+output_filename);
+    */
     return true;
 }
 
-bool run_ymake(string ymake_filename, int mode){
-    ymake_filename = format_filename(ymake_filename);
-    //odczytanie parametrów z pliku
-    vector<Variable*>* variables = get_variables(ymake_filename);
-    if(variables==NULL){
-        Log::error("brak poprawnego pliku \""+ymake_filename+"\"");
-        return false;
-    }
-    string ymake_output = get_var_string(variables, "OUTPUT");
-    for(unsigned int i=0; i<variables->size(); i++){
-        delete variables->at(i);
-    }
-    delete variables;
-    //walidacja wczytanych danych, wartości domyślne
-    if(ymake_output.length()==0) ymake_output = "main.exe";
+bool run_from_ymake(string ymake_filename, int mode){
+    YmakeData* ymake = new YmakeData(ymake_filename);
+    if(Log::isError() || !ymake->validate()) return false;
+
     //zmiana katalogu roboczego na ./bin
-    if(!set_workdir(".\\bin")){
-        Log::error("blad zmiany katalogu roboczego na bin\\");
+    if(!set_workdir(Path::reformat("./bin"))){
+        Log::error("blad zmiany katalogu roboczego na \"bin\"");
         return false;
     }
     stringstream ss;
     if(mode==1){ // zwykły run - system
-        ss<<"\""<<ymake_output<<"\"";
+        ss<<"\""<<ymake->output<<"\"";
         Log::info("Uruchamianie: "+ss.str());
         return system2(ss.str());
     }else if(mode==2){ //run start
-        ss<<"start \"\" \""<<ymake_output<<"\"";
+        ss<<"start \"\" \""<<ymake->output<<"\"";
         Log::info("Uruchamianie: "+ss.str());
         return system2(ss.str());
     }else if(mode==3){ //shelexecute
-        if((int)ShellExecute(0, "open", ymake_output.c_str(), "", 0, SW_SHOW) > 32){
-            Log::info("Uruchomiono \""+ymake_output+"\"...");
+        if((int)ShellExecute(0, "open", ymake->output.c_str(), "", 0, SW_SHOW) > 32){
+            Log::info("Uruchomiono \""+ymake->output+"\"...");
             return true;
         }
-        Log::error("Blad uruchamiania poleceniem ShellExecute: \""+ymake_output+"\"");
+        Log::error("Blad uruchamiania poleceniem ShellExecute: \""+ymake->output+"\"");
         return false;
     }
     return false;
 }
 
+
+bool clean_dir(string dir){
+    if(!dir_exists(dir)){
+        Log::debug("brak folderu " + dir);
+    }else{
+        vector<string>* files = get_files_from_dir(dir);
+        for(unsigned int i=0; i<files->size(); i++){
+            string file_del = Path::append(dir, files->at(i));
+            Log::info("Usuwanie: " + file_del);
+            if(!delete_file(file_del)){
+                Log::error("blad usuwania pliku " + file_del);
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 bool clean_all(){
     Log::info("Czyszczenie...");
-    if(!dir_exists("prv")){
-        Log::debug("brak folderu prv\\");
-    }else{
-        vector<string>* files = get_files_from_dir("prv");
-        for(unsigned int i=0; i<files->size(); i++){
-            Log::info("Usuwanie: prv\\"+files->at(i));
-            if(!delete_file("prv\\"+files->at(i))){
-                Log::error("blad usuwania pliku prv\\"+files->at(i));
-                return false;
-            }
-        }
-    }
-    if(!dir_exists("obj")){
-        Log::debug("brak folderu obj\\");
-    }else{
-        vector<string>* files = get_files_from_dir("obj");
-        for(unsigned int i=0; i<files->size(); i++){
-            Log::info("Usuwanie: obj\\"+files->at(i));
-            if(!delete_file("obj\\"+files->at(i))){
-                Log::error("blad usuwania pliku obj\\"+files->at(i));
-                return false;
-            }
-        }
-    }
+    if(!clean_dir("prv")) return false;
+    if(!clean_dir("obj")) return false;
     return true;
 }
 

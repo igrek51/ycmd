@@ -2,6 +2,7 @@
 #include "files.h"
 #include "io.h"
 #include "string_utils.h"
+#include "path.h"
 
 #include <windows.h>
 #include <ctime>
@@ -40,7 +41,7 @@ bool add_env_path(string new_path){
 }
 
 bool set_workdir(string wd){
-    wd = format_filename(wd);
+    wd = Path::reformat(wd);
     if(!SetCurrentDirectory(wd.c_str())){
         Log::error("Blad zmiany katalogu roboczego: "+wd);
         return false;

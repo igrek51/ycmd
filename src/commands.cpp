@@ -73,17 +73,17 @@ bool exec_commands(vector<string> *args){
         if(!ymake_generate_makefile(next1, next2))
             return false;
     }else if(next_arg("--run", args, next1, "ymake")){ //uruchom aplikację z ymake
-        if(!run_ymake(next1, 1)){
+        if(!run_from_ymake(next1, 1)){
             Log::error("blad uruchamiania z pliku: "+next1);
             return false;
         }
     }else if(next_arg("--run-start", args, next1, "ymake")){ //uruchom aplikację z ymake (z poleceniem start)
-        if(!run_ymake(next1, 2)){
+        if(!run_from_ymake(next1, 2)){
             Log::error("blad uruchamiania z pliku: "+next1);
             return false;
         }
     }else if(next_arg("--run-shell", args, next1, "ymake")){ //uruchom aplikację przez shellexecute
-        if(!run_ymake(next1, 3)){
+        if(!run_from_ymake(next1, 3)){
             Log::error("blad uruchamiania z pliku: "+next1);
             return false;
         }
