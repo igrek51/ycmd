@@ -31,9 +31,8 @@ bool ymake(string ymake_filename){
     add_env_path(ymake->compiler_path);
 
     //utworzenie folderów
-    mkdir_if_n_exist("obj");
     mkdir_if_n_exist("prv");
-    mkdir_if_n_exist("bin");
+    mkdir_if_n_exist("obj");
 
     //znalezienie zmienionych plików nagłówkowych
     bool rebuild = false, change = false;
@@ -63,7 +62,6 @@ bool ymake(string ymake_filename){
     }
 
     vector<string>* objs = new vector<string>();
-
     //znalezienie zmienionych plików cpp
     for(unsigned int i=0; i<srcs->size(); i++){
         string file_src = Path::append(ymake->src_path, srcs->at(i));
@@ -97,6 +95,7 @@ bool ymake(string ymake_filename){
             return false;
         }
     }
+
     //Zasoby
     if(ymake->resource.length()>0){
         if(!file_exists(ymake->resource)){
@@ -118,6 +117,9 @@ bool ymake(string ymake_filename){
             }
         }
     }
+
+    //Budowanie
+    mkdir_if_n_exist("bin");
     if(change || rebuild){
         //inkrementacja wersji
         if(ymake->version_file.length()>0){
@@ -146,78 +148,56 @@ bool ymake(string ymake_filename){
     }else{
         Log::info("Brak zmian do wprowadzenia.");
     }
+
     delete srcs;
     delete objs;
     return true;
 }
 
 bool ymake_generate_bat(string ymake_filename, string output_filename){
-    /*
-    ymake_filename = Path::reformat(ymake_filename);
     output_filename = Path::reformat(output_filename);
     stringstream output;
-    vector<Variable*>* variables = get_variables(ymake_filename);
-    if(variables==NULL){
-        Log::error("brak poprawnego pliku \""+ymake_filename+"\"");
-        return false;
-    }
-    //odczytanie z pliku parametrów
-    string ymake_compiler = get_var_string(variables, "COMPILER");
-    string ymake_compiler_path = get_var_string(variables, "COMPILER_PATH");
-    string ymake_src = get_var_string(variables, "SRC");
-    string ymake_src_path = get_var_string(variables, "SRC_PATH");
-    string ymake_output = get_var_string(variables, "OUTPUT");
-    string ymake_libs = get_var_string(variables, "LIBS");
-    string ymake_compiler_flags = get_var_string(variables, "COMPILER_FLAGS");
-    string ymake_linker_flags = get_var_string(variables, "LINKER_FLAGS");
-    string ymake_resource = get_var_string(variables, "RESOURCE");
-    for(unsigned int i=0; i<variables->size(); i++){
-        delete variables->at(i);
-    }
-    delete variables;
-    //walidacja wczytanych danych, wartości domyślne
-    if(ymake_compiler.length()==0) ymake_compiler = "g++";
-    if(ymake_output.length()==0) ymake_output = "main.exe";
-    if(ymake_compiler_path.length()==0){
-        Log::error("Brak sciezki do kompilatora (COMPILER_PATH)");
-        return false;
-    }
-    if(ymake_src.length()==0){
-        Log::error("Brak plikow zrodlowych (SRC)");
-        return false;
-    }
-    //format ymake_src_path
-    if(ymake_src_path.length()>0){
-        if(ymake_src_path[ymake_src_path.length()-1]!='\\') ymake_src_path+='\\';
-        if(ymake_src_path=="\\"||ymake_src_path==".\\") ymake_src_path = "";
-    }
+    YmakeData* ymake = new YmakeData(ymake_filename);
+    if(Log::isError() || !ymake->validate()) return false;
+
     //lista SRC
-    vector<string> *srcs = get_list_ex(ymake_src, ymake_src_path);
+    vector<string>* srcs = ymake->getSources();
+    if(srcs->size()==0){
+        Log::error("Lista plikow zrodlowych jest pusta");
+        return false;
+    }
+
     //dodanie ścieżki kompilatora do zmiennej środowiskowej PATH
-    output<<"set PATH=%PATH%;"<<ymake_compiler_path<<endl;
+    output<<"set PATH=%PATH%;"<<ymake->compiler_path<<endl;
     //utworzenie folderów
     output<<"mkdir obj"<<endl;
     output<<"mkdir bin"<<endl;
+    vector<string>* objs = new vector<string>();
     //kompilacja plików cpp
     for(unsigned int i=0; i<srcs->size(); i++){
-        //kompilacja plików cpp
-        output<<ymake_compiler<<" -c -o \"obj\\"<<remove_extension(srcs->at(i))<<".o\" "<<ymake_src_path<<srcs->at(i);
-        if(ymake_compiler_flags.length()>0) output<<" "<<ymake_compiler_flags;
+        string file_src = Path::append(ymake->src_path, srcs->at(i));
+        string file_src_obj = Path::append("obj", Path::removeExtenstion(srcs->at(i))) + ".o";
+        output<<ymake->compiler<<" -c -o \""<<file_src_obj<<"\" "<<file_src;
+        if(ymake->compiler_flags.length()>0) output<<" "<<ymake->compiler_flags;
         output<<endl;
+        objs->push_back(file_src_obj);
     }
     //Zasoby
-    if(ymake_resource.length()>0){
-        output<<"windres "<<ymake_resource<<" \"obj\\"<<remove_extension(ymake_resource)<<".o\""<<endl;
+    if(ymake->resource.length()>0){
+        string resource_obj = Path::append("obj", Path::removeExtenstion(ymake->resource)) + ".o";
+        output<<"windres "<<ymake->resource<<" \""<<resource_obj<<"\""<<endl;
+        objs->push_back(resource_obj);
     }
     //konsolidacja całości aplikacji
-    output<<ymake_compiler<<" -o \"bin\\"<<ymake_output<<"\"";
-    for(unsigned int i=0; i<srcs->size(); i++){
-        output<<" \"obj\\"<<remove_extension(srcs->at(i))<<".o\"";
+    string bin_filename = Path::append("bin", ymake->output);
+    output<<ymake->compiler<<" -o \""<<bin_filename<<"\"";
+    for(unsigned int i=0; i<objs->size(); i++){
+        output<<" \""<<objs->at(i)<<"\"";
     }
     delete srcs;
-    if(ymake_resource.length()>0) output<<" \"obj\\"<<remove_extension(ymake_resource)<<".o\"";
-    if(ymake_libs.length()>0) output<<" "<<ymake_libs;
-    if(ymake_linker_flags.length()>0) output<<" "<<ymake_linker_flags;
+    delete objs;
+    if(ymake->libs.length()>0) output<<" "<<ymake->libs;
+    if(ymake->linker_flags.length()>0) output<<" "<<ymake->linker_flags;
     output<<endl;
     //zapiasnie do pliku wyjściowego
     ofstream plik;
@@ -230,71 +210,44 @@ bool ymake_generate_bat(string ymake_filename, string output_filename){
     plik<<output.str();
     plik.close();
     Log::info("Wygenerowano plik: "+output_filename);
-    */
+
     return true;
 }
 
 bool ymake_generate_makefile(string ymake_filename, string output_filename){
-    /*
-    ymake_filename = Path::reformat(ymake_filename);
     output_filename = Path::reformat(output_filename);
-    vector<Variable*>* variables = get_variables(ymake_filename);
-    if(variables==NULL){
-        Log::error("brak poprawnego pliku \""+ymake_filename+"\"");
-        return false;
-    }
-    //odczytanie z pliku parametrów
-    string ymake_compiler = get_var_string(variables, "COMPILER");
-    string ymake_compiler_path = get_var_string(variables, "COMPILER_PATH");
-    string ymake_src = get_var_string(variables, "SRC");
-    string ymake_src_path = get_var_string(variables, "SRC_PATH");
-    string ymake_output = get_var_string(variables, "OUTPUT");
-    string ymake_libs = get_var_string(variables, "LIBS");
-    string ymake_compiler_flags = get_var_string(variables, "COMPILER_FLAGS");
-    string ymake_linker_flags = get_var_string(variables, "LINKER_FLAGS");
-    string ymake_resource = get_var_string(variables, "RESOURCE");
-    for(unsigned int i=0; i<variables->size(); i++){
-        delete variables->at(i);
-    }
-    delete variables;
-    //walidacja wczytanych danych, wartości domyślne
-    if(ymake_compiler.length()==0) ymake_compiler = "g++";
-    if(ymake_output.length()==0) ymake_output = "main.exe";
-    if(ymake_compiler_path.length()==0){
-        Log::error("Brak sciezki do kompilatora (COMPILER_PATH)");
-        return false;
-    }
-    if(ymake_src.length()==0){
-        Log::error("Brak plikow zrodlowych (SRC)");
-        return false;
-    }
-    //format ymake_src_path
-    if(ymake_src_path.length()>0){
-        if(ymake_src_path[ymake_src_path.length()-1]!='\\') ymake_src_path+='\\';
-        if(ymake_src_path=="\\"||ymake_src_path==".\\") ymake_src_path = "";
-    }
-    //lista SRC
-    vector<string> *srcs = get_list_ex(ymake_src, ymake_src_path);
-    //plik Makefile
     stringstream output;
-    output<<"BIN = bin"<<endl;
-    if(ymake_compiler_path.length()==0) ymake_compiler_path = ".";
-    if(ymake_compiler_path[ymake_compiler_path.length()-1]!='\\') ymake_compiler_path+="\\";
-    output<<"CC = "<<ymake_compiler_path<<"mingw32-g++.exe"<<endl;
-    //kompilacja zasobów
-    if(ymake_resource.length()>0){
-        output<<"WINDRES = "<<ymake_compiler_path<<"windres.exe"<<endl;
+    YmakeData* ymake = new YmakeData(ymake_filename);
+    if(Log::isError() || !ymake->validate()) return false;
+
+    //lista SRC
+    vector<string>* srcs = ymake->getSources();
+    if(srcs->size()==0){
+        Log::error("Lista plikow zrodlowych jest pusta");
+        return false;
     }
-    output<<"CFLAGS = -c "<<ymake_compiler_flags<<endl;
-    output<<"LFLAGS = "<<ymake_linker_flags<<endl;
-    output<<"LIBS = "<<ymake_libs<<endl;
-    output<<"OUTPUT_NAME = "<<ymake_output<<endl;
+
+    //plik Makefile
+    string ymake_path_cc = Path::append(ymake->compiler_path, "mingw32-g++.exe");
+    output<<"BIN = bin"<<endl;
+    output<<"CC = "<<ymake_path_cc<<endl;
+    //kompilacja zasobów
+    if(ymake->resource.length()>0){
+        string ymake_path_windres = Path::append(ymake->compiler_path, "windres.exe");
+        output<<"WINDRES = "<<ymake_path_windres<<endl;
+    }
+    output<<"CFLAGS = -c "<<ymake->compiler_flags<<endl;
+    output<<"LFLAGS = "<<ymake->linker_flags<<endl;
+    output<<"LIBS = "<<ymake->libs<<endl;
+    output<<"OUTPUT_NAME = "<<ymake->output<<endl;
     output<<"OBJS =";
     for(unsigned int i=0; i<srcs->size(); i++){
-        output<<" obj/"<<remove_extension(srcs->at(i))<<".o";
+        string file_src_obj = Path::append("obj", Path::removeExtenstion(srcs->at(i))) + ".o";
+        output<<" "<<file_src_obj;
     }
-    if(ymake_resource.length()>0){
-        output<<" obj/"<<remove_extension(ymake_resource)<<".o";
+    if(ymake->resource.length()>0){
+        string resource_obj = Path::append("obj", Path::removeExtenstion(ymake->resource)) + ".o";
+        output<<" "<<resource_obj;
     }
     output<<endl<<endl<<endl;
     //target all
@@ -306,15 +259,18 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename){
     output<<"\tdel /Q $(BIN)\\$(OUTPUT_NAME)"<<endl<<endl<<endl;
     //pojedyncze pliki .o
     for(unsigned int i=0; i<srcs->size(); i++){
-        output<<"obj/"<<remove_extension(srcs->at(i))<<".o: "<<ymake_src_path<<srcs->at(i)<<endl;
-        output<<"\t$(CC) $(CFLAGS) "<<ymake_src_path<<srcs->at(i)<<" -o obj/"<<remove_extension(srcs->at(i))<<".o"<<endl<<endl;
+        string file_src = Path::append(ymake->src_path, srcs->at(i));
+        string file_src_obj = Path::append("obj", Path::removeExtenstion(srcs->at(i))) + ".o";
+        output<<file_src_obj<<": "<<file_src<<endl;
+        output<<"\t$(CC) $(CFLAGS) "<<file_src<<" -o \""<<file_src_obj<<"\""<<endl<<endl;
+    }
+    if(ymake->resource.length()>0){
+        string resource_obj = Path::append("obj", Path::removeExtenstion(ymake->resource)) + ".o";
+        output<<resource_obj<<": "<<ymake->resource<<endl;
+        output<<"\t$(WINDRES) "<<ymake->resource<<" \""<<resource_obj<<"\""<<endl<<endl;
     }
     delete srcs;
-    if(ymake_resource.length()>0){
-        output<<"obj/"<<remove_extension(ymake_resource)<<".o: "<<ymake_resource<<endl;
-        output<<"\t$(WINDRES) resource.rc \"obj/"<<remove_extension(ymake_resource)<<".o\""<<endl<<endl;
-    }
-    //zapiasnie do pliku wyjściowego
+    //zapisanie do pliku wyjściowego
     ofstream plik;
     plik.open(output_filename.c_str());
     if(!plik.good()){
@@ -325,7 +281,7 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename){
     plik<<output.str();
     plik.close();
     Log::info("Wygenerowano plik: "+output_filename);
-    */
+
     return true;
 }
 

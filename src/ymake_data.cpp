@@ -39,6 +39,9 @@ bool YmakeData::validate(){
         return false;
     }
     compiler_path = Path::reformat(compiler_path);
+    if(compiler_path.compare(".")==0){
+        compiler_path = "";
+    }
     if(src.length()==0){
         Log::error("Brak plikow zrodlowych (SRC)");
         return false;
