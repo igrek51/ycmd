@@ -4,25 +4,8 @@
 
 #include <conio.h>
 
-bool IO::quiet = false;
 bool IO::pause = false;
-bool IO::error_was = false;
 string IO::version = VERSION;
-
-void IO::echo(string s, int priority){
-    if(quiet && priority<=0) return;
-    cout<<s<<endl;
-}
-
-void IO::error(string s){
-    echo("[ERROR!] - "+s, 1);
-    error_was = true;
-}
-
-void IO::info(string s){
-    echo("[info] - "+s);
-}
-
 
 vector<string>* get_args(int argc, char **argv){
     vector<string>* args = new vector<string>;
@@ -50,7 +33,7 @@ bool next_arg_number(string szukany, vector<string>* args, int &next){
         next = i + 1;
         return true;
     }else{
-        IO::error("Brak parametru po: "+szukany);
+        Log::error("Brak parametru po: "+szukany);
         return false; //nie istnieje następny element
     }
 }
@@ -64,10 +47,10 @@ bool next_arg(string szukany, vector<string>* args, string &next_text, string do
     }else{ //nie istnieje następny element
         if(domyslny.length()>0){ //została podana wartość domyślna
             next_text = domyslny;
-            IO::info("Przyjeto domyslna wartosc 1. parametru po \""+szukany+"\": "+domyslny);
+            Log::debug("Przyjeto domyslna wartosc 1. parametru po \""+szukany+"\": "+domyslny);
             return true;
         }else{ //brak zdefiniowanej wartości domyślnej
-            IO::error("Brak parametru po: "+szukany);
+            Log::error("Brak parametru po: "+szukany);
             return false;
         }
     }
@@ -84,21 +67,21 @@ bool next_arg2(string szukany, vector<string>* args, string &next_text1, string 
         if(domyslny2.length()>0){ //została podana 2. wartość domyślna
             next_text1 = args->at(i+1);
             next_text2 = domyslny2;
-            IO::info("Przyjeto domyslna wartosc 2. parametru po \""+szukany+"\": "+domyslny2);
+            Log::debug("Przyjeto domyslna wartosc 2. parametru po \""+szukany+"\": "+domyslny2);
             return true;
         }else{ //brak zdefiniowanych wartości domyślnych
-            IO::error("Brak drugiego parametru po "+szukany);
+            Log::error("Brak drugiego parametru po "+szukany);
             return false; //nie istnieją oba
         }
     }else{ //nie istnieje żodyn następny
         if(domyslny1.length()>0 && domyslny2.length()>0){ //podane obie wartości domyślne
             next_text1 = domyslny1;
             next_text2 = domyslny2;
-            IO::info("Przyjeto domyslna wartosc 1. parametru po \""+szukany+"\": "+domyslny1);
-            IO::info("Przyjeto domyslna wartosc 2. parametru po \""+szukany+"\": "+domyslny2);
+            Log::debug("Przyjeto domyslna wartosc 1. parametru po \""+szukany+"\": "+domyslny1);
+            Log::debug("Przyjeto domyslna wartosc 2. parametru po \""+szukany+"\": "+domyslny2);
             return true;
         }else{ //brak zdefiniowanych wartości domyślnych
-            IO::error("Brak 2 parametrow po "+szukany);
+            Log::error("Brak 2 parametrow po "+szukany);
             return false; //nie istnieją oba
         }
     }

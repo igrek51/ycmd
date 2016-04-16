@@ -1,5 +1,7 @@
 #include "files.h"
 #include "io.h"
+#include "string_utils.h"
+#include "system.h"
 
 #include <fstream>
 #include <windows.h>
@@ -105,35 +107,19 @@ vector<string>* get_nonempty_lines(string filename){
 }
 
 
-bool has_extension(string name, string ext){
-    if(ext.length()==0) return true;
-    if(ext.length() > name.length()) return false;
-    name = name.substr(name.length()-ext.length(),ext.length());
-    if(name==ext) return true;
-    return false;
-}
-
-string dir_format(string dir){
-    for(unsigned int i=0; i<dir.length(); i++){
-        if(dir[i]=='/') dir[i]='\\';
-    }
-    return dir;
-}
-
-
 vector<string>* get_files_from_dir(string dir, string ext){
     if(ext=="*")
         ext = "";
     if(dir.length()==0)
         dir = ".";
     if(!dir_exists(dir)){
-        IO::error("brak folderu: "+dir);
+        Log::error("brak folderu: "+dir);
         return NULL;
     }
     WIN32_FIND_DATAA ffd;
     HANDLE hFind = FindFirstFileA((dir+"\\*").c_str(), &ffd);
     if(hFind==INVALID_HANDLE_VALUE){
-        IO::error("blad otwierania folderu "+dir);
+        Log::error("blad otwierania folderu "+dir);
         return NULL;
     }
     vector<string>* files = new vector<string>;
@@ -143,7 +129,7 @@ vector<string>* get_files_from_dir(string dir, string ext){
         if(strcmp(stemp,"..")==0) continue;
         if(strcmp(stemp,"desktop.ini")==0) continue;
         if(!(ffd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)){ //plik
-            if(has_extension(ffd.cFileName, ext)){
+            if(ends_with(ffd.cFileName, ext)){
                 files->push_back(ffd.cFileName);
             }
         }
@@ -152,12 +138,9 @@ vector<string>* get_files_from_dir(string dir, string ext){
     return files;
 }
 
-
-string remove_file_extension(string filename){
-    size_t lastpos = filename.rfind('.');
-    if(lastpos!=string::npos && lastpos > 0){
-        //usunięcie rozszerzenia
-        filename = filename.substr(0, lastpos);
+bool mkdir_if_n_exist(string dir){
+    if(!dir_exists(dir)){
+        return system2("mkdir "+dir);
     }
-    return filename;
+    return true;
 }

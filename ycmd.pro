@@ -9,23 +9,27 @@ TEMPLATE = app
 
 
 SOURCES +=\
-    main.cpp \
-    files.cpp \
-    ymake.cpp \
-    system.cpp \
-    versioning.cpp \
-    io.cpp \
-    commands.cpp \
-    variables.cpp
+    src/main.cpp \
+    src/files.cpp \
+    src/ymake.cpp \
+    src/system.cpp \
+    src/versioning.cpp \
+    src/io.cpp \
+    src/commands.cpp \
+    src/variables.cpp \
+    src/string_utils.cpp \
+    src/log.cpp
 
 
 HEADERS += \
-    files.h \
-    ymake.h \
-    system.h \
-    versioning.h \
-    io.h \
-    commands.h \
-    variables.h \
-    version.h
+    src/files.h \
+    src/ymake.h \
+    src/system.h \
+    src/versioning.h \
+    src/io.h \
+    src/commands.h \
+    src/variables.h \
+    src/version.h \
+    src/string_utils.h \
+    src/log.h
 

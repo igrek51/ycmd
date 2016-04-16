@@ -16,22 +16,21 @@ int main(int argc, char **argv){
 		return 0;
 	}
     //flagi quiet i pause
-    if(is_arg("-q", args)) IO::quiet = true;
     if(is_arg("-p", args)) IO::pause = true;
     //wykonywanie polecenia
     if(!exec_commands(args))
-        IO::error_was = true;
+        Log::errors_count++;
     //pause if error
-    if(IO::error_was && (is_arg("--pe", args) || is_arg("-pe", args))) IO::pause = true;
+    if(Log::errors_count > 0 && (is_arg("--pe", args) || is_arg("-pe", args))) IO::pause = true;
     if(IO::pause){
-        if(IO::error_was){
-			IO::echo("Program zakonczony bledem...", 1);
+        if(Log::errors_count > 0){
+			Log::info("Program zakonczony bledem...");
 		}else{
-			IO::echo("Pomyslnie zakonczono program...");
+			Log::info("Pomyslnie zakonczono program...");
 		}
         getch();
 	}
     delete args;
-    if(IO::error_was) return 1;
+    if(Log::errors_count > 0) return 1;
 	return 0;
 }

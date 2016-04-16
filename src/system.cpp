@@ -1,6 +1,7 @@
 #include "system.h"
 #include "files.h"
 #include "io.h"
+#include "string_utils.h"
 
 #include <windows.h>
 #include <ctime>
@@ -9,18 +10,18 @@
 bool system2(string cmd){
     if(system(cmd.c_str())==0)
         return true;
-    IO::error("Blad polecenia: "+cmd);
+    Log::error("Blad polecenia: "+cmd);
     return false;
 }
 
 bool system_echo(string cmd){
-    IO::echo("Wykonywanie: "+cmd);
+    Log::info("Wykonywanie: "+cmd);
     return system2(cmd);
 }
 
 bool set_env(string variable, string value){
     if(SetEnvironmentVariable(variable.c_str(),value.c_str())==0){
-        IO::error("Blad zmiany zmiennej srodowiskowej: "+variable);
+        Log::error("Blad zmiany zmiennej srodowiskowej: "+variable);
         return false;
     }
     return true;
@@ -41,7 +42,7 @@ bool add_path(string new_path){
 bool set_workdir(string wd){
     wd = dir_format(wd);
     if(!SetCurrentDirectory(wd.c_str())){
-        IO::error("Blad zmiany katalogu roboczego: "+wd);
+        Log::error("Blad zmiany katalogu roboczego: "+wd);
         return false;
     }
     return true;
@@ -83,10 +84,10 @@ string get_time_date(){
 }
 
 bool count_time(string exec){
-    IO::echo("Start: "+get_time());
+    Log::info("Start: "+get_time());
     double start_t=(double)clock();
     if(!system2(exec)){
-        IO::error("Polecenie wykonane z bledem: "+exec);
+        Log::error("Polecenie wykonane z bledem: "+exec);
     }
     double sekundy=((double)clock()-start_t)/CLOCKS_PER_SEC;
     int minuty = ((int)sekundy)/60;
@@ -95,6 +96,6 @@ bool count_time(string exec){
     ss<<"Czas wykonania: ";
     if(minuty>0) ss<<minuty<<" min ";
     ss<<sekundy<<" s";
-    IO::echo(ss.str());
+    Log::info(ss.str());
     return true;
 }

@@ -16,11 +16,8 @@ bool delete_file(string filename);
 vector<string>* get_all_lines(string filename);
 vector<string>* get_nonempty_lines(string filename);
 
-bool has_extension(string name, string ext);
-string dir_format(string dir);
-
 vector<string>* get_files_from_dir(string dir, string ext="");
 
-string remove_file_extension(string filename);
+bool mkdir_if_n_exist(string dir);
 
 #endif

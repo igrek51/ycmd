@@ -1,6 +1,8 @@
 #ifndef IO_H
 #define IO_H
 
+#include "log.h"
+
 #include <iostream>
 #include <vector>
 
@@ -8,13 +10,8 @@ using namespace std;
 
 class IO{
 public:
-    static bool quiet;
     static bool pause;
-    static bool error_was;
     static string version;
-    static void echo(string s, int priority = 0);
-    static void error(string s);
-    static void info(string s);
 };
 
 vector<string>* get_args(int argc, char **argv);

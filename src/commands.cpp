@@ -4,6 +4,7 @@
 #include "system.h"
 #include "versioning.h"
 #include "ymake.h"
+#include "string_utils.h"
 
 #include <sstream>
 
@@ -14,7 +15,7 @@ bool exec_commands(vector<string> *args){
     //zmiana katalogu roboczego
     if(next_arg("-w", args, next1) || next_arg("--workdir", args, next1)){
         if(!set_workdir(next1)){
-            IO::error("nieprawidlowa sciezka \""+next1+"\"");
+            Log::error("nieprawidlowa sciezka \""+next1+"\"");
             return false;
         }
     }
@@ -26,7 +27,7 @@ bool exec_commands(vector<string> *args){
     }
     if(next_arg("--addpath", args, next1)){ //zmienna środowiskowa PATH
         if(!add_path(next1)){
-            IO::error("blad dodawania do zmiennej srodowiskowej PATH");
+            Log::error("blad dodawania do zmiennej srodowiskowej PATH");
             return false;
         }
     }
@@ -45,10 +46,10 @@ bool exec_commands(vector<string> *args){
         }
         return system_echo(ss.str());
     }else if(next_arg("-f", args, next1) || next_arg("--file", args, next1)){ //wykonaj wiersze z pliku
-        IO::echo("Wykonywanie zawartosci pliku \""+next1+"\":");
+        Log::info("Wykonywanie zawartosci pliku \""+next1+"\":");
         vector<string> *linie = get_nonempty_lines(next1);
         if(linie==NULL){
-            IO::error("brak pliku \""+next1+"\"");
+            Log::error("brak pliku \""+next1+"\"");
             delete linie;
             return false;
         }
@@ -72,17 +73,17 @@ bool exec_commands(vector<string> *args){
             return false;
     }else if(next_arg("--run", args, next1, "ymake")){ //uruchom aplikację z ymake
         if(!run_ymake(next1, 1)){
-            IO::error("blad uruchamiania z pliku: "+next1);
+            Log::error("blad uruchamiania z pliku: "+next1);
             return false;
         }
     }else if(next_arg("--run-start", args, next1, "ymake")){ //uruchom aplikację z ymake (z poleceniem start)
         if(!run_ymake(next1, 2)){
-            IO::error("blad uruchamiania z pliku: "+next1);
+            Log::error("blad uruchamiania z pliku: "+next1);
             return false;
         }
     }else if(next_arg("--run-shell", args, next1, "ymake")){ //uruchom aplikację przez shellexecute
         if(!run_ymake(next1, 3)){
-            IO::error("blad uruchamiania z pliku: "+next1);
+            Log::error("blad uruchamiania z pliku: "+next1);
             return false;
         }
     }else if(is_arg("--init-ymake", args)){
@@ -102,7 +103,7 @@ bool exec_commands(vector<string> *args){
     }else if(is_arg("--test", args)){
 
     }else{
-        IO::error("brak poprawnego polecenia");
+        Log::error("brak poprawnego polecenia");
         return false;
     }
     return true;

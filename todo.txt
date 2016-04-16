@@ -1,13 +1,22 @@
-przy kompilacji generowanie plików .o (nie .cpp.o) - zamiana rozszerzenia (uciêcie .cpp)
-
 jeœli nie istniej¹ pliki obj - ponowna kompilacja
 czysczenie katalogu obj
 
 obiektowa struktura programu
 
-loglevel: error, warn, info, debug (domyœlny info)
+obs³uga katalogów: /, \, lub brak
+opakowywanie w ""
 
+pliki Ÿród³owe w podfolderach
+
+opis linijek ymake przy tworzeniu nowego (init), sprawdzenie, czy siê zapisz¹
+
+obs³uga przecinków przy listach
+
+modu³ log
+loglevel: error, warn, info, debug (domyœlny info)
 info w logach (zakoñczono czyszczenie)
+
+b³êdy przekazywane w wyj¹tkach
 
 systemowe funkcje do osobnego modu³u (mkdir, list dir, system, shellexecute)
 2 ga³êzie: windows, linux

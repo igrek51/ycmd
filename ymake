@@ -3,7 +3,7 @@ COMPILER = g++
 
 COMPILER_PATH = C:\MinGW\bin
 
-SRC_PATH =
+SRC_PATH = src
 
 SRC = *.cpp
 
