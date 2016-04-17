@@ -4,7 +4,7 @@ obs³uga katalogów: /, \, lub brak
 opakowywanie w "" lub konwersja spacji na "\ "
 cudzys³owy w nazwach plików przy generowaniu 
 
-pliki Ÿród³owe w podfolderach
+pliki Ÿród³owe w podfolderach: utworzenie pliku .o formatu: fodler_folder2_plik.o, fodler_folder2_plik_2.o
 
 test z zasobami w katalogu res (resource nie mo¿e byæ w podkatalogu, zasoby mog¹)
 
