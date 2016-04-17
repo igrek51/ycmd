@@ -20,6 +20,7 @@ bool file_exists(string filename) {
 }
 
 bool dir_exists(string name) {
+    if(name.length() == 0) name = ".";
     DWORD ftyp = GetFileAttributesA(name.c_str());
     if (ftyp == INVALID_FILE_ATTRIBUTES) return false;
     if (ftyp & FILE_ATTRIBUTE_DIRECTORY) return true;
@@ -44,11 +45,11 @@ bool files_equal(string file1, string file2) {
         return false;
     }
     //zawartość plików
-    char *plik1_tab = new char[fsize1];
+    char* plik1_tab = new char[fsize1];
     plik1.seekg(0, plik1.beg);
     plik1.read(plik1_tab, fsize1);
     plik1.close();
-    char *plik2_tab = new char[fsize2];
+    char* plik2_tab = new char[fsize2];
     plik2.seekg(0, plik2.beg);
     plik2.read(plik2_tab, fsize2);
     plik2.close();
@@ -62,8 +63,8 @@ bool files_equal(string file1, string file2) {
     return true;
 }
 
-bool copy_files(string file1, string file2) {
-    return CopyFile(file1.c_str(), file2.c_str(), false);
+bool copy_overwrite_file(string src, string file2) {
+    return CopyFile(src.c_str(), file2.c_str(), false);
 }
 
 bool delete_file(string filename) {
@@ -71,7 +72,7 @@ bool delete_file(string filename) {
 }
 
 
-vector<string> *get_all_lines(string filename) {
+vector<string>* get_all_lines(string filename) {
     filename = Path::reformat(filename);
     fstream plik;
     plik.open(filename.c_str(), fstream::in | fstream::binary);
@@ -79,7 +80,7 @@ vector<string> *get_all_lines(string filename) {
         plik.close();
         return NULL;
     }
-    vector<string> *lines = new vector<string>;
+    vector<string>* lines = new vector<string>;
     string linia;
     do {
         getline(plik, linia, '\n'); //rozdzielenie znakami \n
@@ -95,8 +96,8 @@ vector<string> *get_all_lines(string filename) {
     return lines;
 }
 
-vector<string> *get_nonempty_lines(string filename) {
-    vector<string> *lines = get_all_lines(filename);
+vector<string>* get_nonempty_lines(string filename) {
+    vector<string>* lines = get_all_lines(filename);
     if (lines == NULL) return NULL;
     for (unsigned int i = 0; i < lines->size(); i++) {
         if (lines->at(i).length() == 0) { //usunięcie pustych elementów
@@ -108,7 +109,7 @@ vector<string> *get_nonempty_lines(string filename) {
 }
 
 
-vector<string> *get_files_from_dir(string dir, string ext) {
+vector<string>* get_files_from_dir(string dir, string ext) {
     if (ext == "*")
         ext = "";
     if (dir.length() == 0)
@@ -123,9 +124,9 @@ vector<string> *get_files_from_dir(string dir, string ext) {
         Log::error("blad otwierania folderu " + dir);
         return NULL;
     }
-    vector<string> *files = new vector<string>;
+    vector<string>* files = new vector<string>;
     do {
-        const char *stemp = string(ffd.cFileName).c_str();
+        const char* stemp = string(ffd.cFileName).c_str();
         if (strcmp(stemp, ".") == 0) continue;
         if (strcmp(stemp, "..") == 0) continue;
         if (strcmp(stemp, "desktop.ini") == 0) continue;
@@ -141,7 +142,44 @@ vector<string> *get_files_from_dir(string dir, string ext) {
 
 bool mkdir_if_n_exist(string dir) {
     if (!dir_exists(dir)) {
-        return system2("mkdir " + dir);
+        if(system2("mkdir " + dir)){
+            Log::debug("Utworzono katalog: " + dir);
+            return true;
+        }else{
+            return false;
+        }
     }
     return true;
+}
+
+bool mkdir_recursively(string dir) {
+    if (dir_exists(dir)) return true;
+    Path* parentPath = new Path(dir);
+    string parentDir = parentPath->parentDir()->getPath();
+    delete parentPath;
+    if (parentDir.length() == 0){
+        return true;
+    }
+    if (dir_exists(parentDir)) {
+        return mkdir_if_n_exist(dir);
+    } else {
+        bool result1 = mkdir_recursively(parentDir);
+        if(!result1) return false;
+        return mkdir_if_n_exist(dir);
+    }
+}
+
+bool mkdir_overwrite_file(string src, string file2){
+    //stworzenie katalogu, jeśli nie istnieje
+    Path* parentPath = new Path(file2);
+    string dir = parentPath->parentDir()->getPath();
+    delete parentPath;
+    if(dir.length() > 0) {
+        if (!mkdir_recursively(dir)) {
+            Log::error("Blad tworzenia katalogu: " + dir);
+            return false;
+        }
+    }
+    //skopiowanie z nadpisaniem
+    return copy_overwrite_file(src, file2);
 }

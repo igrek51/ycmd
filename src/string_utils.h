@@ -14,4 +14,6 @@ vector<string> *get_param_list(string lista);
 
 bool ends_with(string name, string ext);
 
+string replaceStr(string str, char find, char replaceTo);
+
 #endif

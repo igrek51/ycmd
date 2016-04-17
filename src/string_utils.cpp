@@ -26,22 +26,27 @@ string trim_quotes(string s) {
 }
 
 
-vector<string> *get_param_list(string lista) {
-    vector<string> *kontener = new vector<string>;
+vector<string>* get_param_list(string lista) {
+    vector<string>* kontener = new vector<string>;
     lista = trim_spaces(lista);
     if (lista.length() == 0) return kontener;
     //podział przez spacje lub przecinki (nie przez cudzysłowy)
     bool cudzyslow = false;
+    string newStr;
     for (int i = 0; i < (int) lista.length(); i++) {
         if (lista[i] == '\"') cudzyslow = !cudzyslow;
         if (lista[i] == ',' && !cudzyslow) lista[i] = ' ';
         if (lista[i] == ' ' && !cudzyslow && i > 0) {
-            kontener->push_back(lista.substr(0, i));
+            newStr = trim_spaces(lista.substr(0, i));
+            if(newStr.length() > 0) {
+                kontener->push_back(newStr);
+            }
             lista = lista.substr(i + 1);
             i = -1;
         }
     }
-    if (lista.length() > 0) kontener->push_back(lista);
+    newStr = trim_spaces(lista);
+    if(newStr.length() > 0) kontener->push_back(newStr);
     return kontener;
 }
 
@@ -52,4 +57,12 @@ bool ends_with(string name, string ext) {
     name = name.substr(name.length() - ext.length(), ext.length());
     if (name == ext) return true;
     return false;
+}
+
+
+string replaceStr(string str, char find, char replaceTo) {
+    for (unsigned int i = 0; i < str.length(); i++) {
+        if (str[i] == find) str[i] = replaceTo;
+    }
+    return str;
 }

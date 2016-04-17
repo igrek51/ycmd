@@ -1,4 +1,5 @@
 #include "path.h"
+#include "string_utils.h"
 
 Path::Path(string path) {
     this->path = cutSlashFromEnd(reformatSlash(path));
@@ -13,7 +14,7 @@ string Path::getUnixPath() {
 }
 
 string Path::getWindowsPath() {
-    return replace(path, '/', '\\');
+    return replaceStr(path, '/', '\\');
 }
 
 string Path::cutSlashFromBeginning(string pathstr) {
@@ -30,15 +31,8 @@ string Path::cutSlashFromEnd(string pathstr) {
     return pathstr;
 }
 
-string Path::replace(string str, char find, char replaceTo) {
-    for (unsigned int i = 0; i < str.length(); i++) {
-        if (str[i] == find) str[i] = replaceTo;
-    }
-    return str;
-}
-
 string Path::reformatSlash(string pathstr) {
-    return replace(pathstr, '\\', '/');
+    return replaceStr(pathstr, '\\', '/');
 }
 
 bool Path::endsWith(string ext) {
@@ -100,3 +94,19 @@ string Path::removeExtenstion(string filename) {
     return result;
 }
 
+string Path::formatUnderscore(string filename){
+    Path *ch = new Path(filename);
+    string result = replaceStr(ch->removeExtension()->path, '/', '_');
+    delete ch;
+    return result;
+}
+
+Path* Path::parentDir(){
+    size_t lastslash = path.rfind('/');
+    if(lastslash == string::npos){
+        path = "";
+    }else {
+        path = path.substr(0, lastslash);
+    }
+    return this;
+}

@@ -27,8 +27,9 @@ bool Log::isError() {
 
 void Log::echo(string s, int level) {
     if (level > log_level) return;
-    cout << s << endl;
     if (level == ERROR) {
         cerr << s << endl;
+    } else {
+        cout << s << endl;
     }
 }

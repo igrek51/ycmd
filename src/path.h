@@ -19,8 +19,6 @@ private:
 
     static string reformatSlash(string pathstr);
 
-    static string replace(string str, char find, char replaceTo);
-
 public:
     Path(string path);
 
@@ -28,17 +26,21 @@ public:
 
     bool endsWith(string ext);
 
-    Path *removeExtension();
+    Path* removeExtension();
 
-    Path *append(string child);
+    Path* append(string child);
 
-    Path *append(Path *child);
+    Path* append(Path* child);
+
+    Path* parentDir();
 
     static string reformat(string path);
 
     static string append(string dir, string filename);
 
     static string removeExtenstion(string filename);
+
+    static string formatUnderscore(string filename);
 };
 
 #endif

@@ -25,7 +25,7 @@ bool ymake_analyze_headers(YmakeDataSource *ds, bool &rebuild) {
         Log::debug("Zmodyfikowany plik naglowkowy: " + file_header);
         rebuild = true;
         //skopiowanie nowej wersji z nadpisaniem
-        if (!copy_files(file_header, file_header_prv)) {
+        if (!mkdir_overwrite_file(file_header, file_header_prv)) {
             Log::error("blad kopiowania do pliku " + file_header_prv);
             delete headers;
             return false;
@@ -45,7 +45,7 @@ bool ymake_analyze_srcs(YmakeDataSource *ds, bool &rebuild, vector<string> *objs
     for (unsigned int i = 0; i < srcs->size(); i++) {
         string file_src = Path::append(ds->src_path, srcs->at(i));
         string file_src_prv = Path::append("prv", srcs->at(i));
-        string file_src_obj = Path::append("obj", Path::removeExtenstion(srcs->at(i))) + ".o";
+        string file_src_obj = Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(srcs->at(i)))) + ".o";
         objs->push_back(file_src_obj);
         if (!file_exists(file_src)) {
             Log::error("brak pliku zrodlowego " + file_src);
@@ -62,7 +62,7 @@ bool ymake_analyze_srcs(YmakeDataSource *ds, bool &rebuild, vector<string> *objs
         }
         //kompilacja zmienionych plików
         stringstream ss;
-        ss << ds->compiler << " -c -o \"" << file_src_obj << "\" " << file_src;
+        ss << ds->compiler << " -c -o \"" << file_src_obj << "\" \"" << file_src<<"\"";
         if (ds->compiler_flags.length() > 0) ss << " " << ds->compiler_flags;
         Log::info("Kompilacja " + file_src + ": " + ss.str());
         if (!system2(ss.str())) {
@@ -71,7 +71,7 @@ bool ymake_analyze_srcs(YmakeDataSource *ds, bool &rebuild, vector<string> *objs
             return false;
         }
         //skopiowanie nowej wersji z nadpisaniem
-        if (!copy_files(file_src, file_src_prv)) {
+        if (!mkdir_overwrite_file(file_src, file_src_prv)) {
             Log::error("blad kopiowania do pliku " + file_src_prv);
             delete srcs;
             return false;
@@ -89,14 +89,14 @@ bool ymake_analyze_resources(YmakeDataSource *ds, bool &rebuild, vector<string> 
         }
         //sprawdzenie starej wersji
         string resource_prv = Path::append("prv", ds->resource);
-        string resource_obj = Path::append("obj", Path::removeExtenstion(ds->resource)) + ".o";
+        string resource_obj = Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(ds->resource))) + ".o";
         objs->push_back(resource_obj);
         if (!files_equal(ds->resource, resource_prv) || !file_exists(resource_obj)) {
             rebuild = true;
             Log::info("Dodawanie zasobow: " + ds->resource);
-            if (!system2("windres " + ds->resource + " \"" + resource_obj + "\""))
+            if (!system2("windres \"" + ds->resource + "\" \"" + resource_obj + "\""))
                 return false;
-            if (!copy_files(ds->resource, resource_prv)) {
+            if (!mkdir_overwrite_file(ds->resource, resource_prv)) {
                 Log::error("blad kopiowania do pliku " + resource_prv);
                 return false;
             }
@@ -113,7 +113,6 @@ bool ymake_linker_build(YmakeDataSource *ds, vector<string> *objs) {
     for (unsigned int i = 0; i < objs->size(); i++) {
         ss2 << " \"" << objs->at(i) << "\"";
     }
-
     if (ds->libs.length() > 0) ss2 << " " << ds->libs;
     if (ds->linker_flags.length() > 0) ss2 << " " << ds->linker_flags;
     Log::info("Konsolidacja: " + ss2.str());
@@ -193,16 +192,16 @@ bool ymake_generate_bat(string ymake_filename, string output_filename) {
     //kompilacja plików cpp
     for (unsigned int i = 0; i < srcs->size(); i++) {
         string file_src = Path::append(ymake->src_path, srcs->at(i));
-        string file_src_obj = Path::append("obj", Path::removeExtenstion(srcs->at(i))) + ".o";
-        output << ymake->compiler << " -c -o \"" << file_src_obj << "\" " << file_src;
+        string file_src_obj = Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(srcs->at(i)))) + ".o";
+        output << ymake->compiler << " -c -o \"" << file_src_obj << "\" \"" << file_src << "\"";
         if (ymake->compiler_flags.length() > 0) output << " " << ymake->compiler_flags;
         output << endl;
         objs->push_back(file_src_obj);
     }
     //Zasoby
     if (ymake->resource.length() > 0) {
-        string resource_obj = Path::append("obj", Path::removeExtenstion(ymake->resource)) + ".o";
-        output << "windres " << ymake->resource << " \"" << resource_obj << "\"" << endl;
+        string resource_obj = Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(ymake->resource))) + ".o";
+        output << "windres \"" << ymake->resource << "\" \"" << resource_obj << "\"" << endl;
         objs->push_back(resource_obj);
     }
     //konsolidacja całości aplikacji
@@ -256,12 +255,12 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename) {
     output << "OUTPUT_NAME = " << ymake->output << endl;
     output << "OBJS =";
     for (unsigned int i = 0; i < srcs->size(); i++) {
-        string file_src_obj = Path::append("obj", Path::removeExtenstion(srcs->at(i))) + ".o";
-        output << " " << file_src_obj;
+        string file_src_obj = Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(srcs->at(i)))) + ".o";
+        output << " \"" << file_src_obj << "\"";
     }
     if (ymake->resource.length() > 0) {
-        string resource_obj = Path::append("obj", Path::removeExtenstion(ymake->resource)) + ".o";
-        output << " " << resource_obj;
+        string resource_obj = Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(ymake->resource))) + ".o";
+        output << " \"" << resource_obj << "\"";
     }
     output << endl << endl << endl;
     //target all
@@ -304,7 +303,6 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename) {
 bool run_from_ymake(string ymake_filename, int mode) {
     YmakeDataSource *ymake = new YmakeDataSource(ymake_filename);
     if (Log::isError() || !ymake->validate()) return false;
-
     //zmiana katalogu roboczego na ./bin
     if (!set_workdir(Path::reformat("./bin"))) {
         Log::error("blad zmiany katalogu roboczego na \"bin\"");
@@ -344,6 +342,8 @@ bool clean_dir(string dir) {
                 return false;
             }
         }
+        //TODO: usunięcie katalogów wewnątrz (rekurencyjnie)
+
     }
     return true;
 }
