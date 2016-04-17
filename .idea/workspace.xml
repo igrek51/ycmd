@@ -19,16 +19,10 @@
   <component name="ChangeListManager">
     <list default="true" id="504cee0c-8207-467c-b37d-3cee45500368" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/ycmd.exe" afterPath="$PROJECT_DIR$/bin/ycmd.exe" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/commands.cpp" afterPath="$PROJECT_DIR$/src/commands.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/files.cpp" afterPath="$PROJECT_DIR$/src/files.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/files.h" afterPath="$PROJECT_DIR$/src/files.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/log.cpp" afterPath="$PROJECT_DIR$/src/log.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main.cpp" afterPath="$PROJECT_DIR$/src/main.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/path.cpp" afterPath="$PROJECT_DIR$/src/path.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/path.h" afterPath="$PROJECT_DIR$/src/path.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/string_utils.cpp" afterPath="$PROJECT_DIR$/src/string_utils.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/string_utils.h" afterPath="$PROJECT_DIR$/src/string_utils.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/version.h" afterPath="$PROJECT_DIR$/src/version.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ymake.cpp" afterPath="$PROJECT_DIR$/src/ymake.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/todo.txt" afterPath="$PROJECT_DIR$/todo.txt" />
@@ -55,8 +49,18 @@
       <file leaf-file-name="ymake.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ymake.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="464">
-              <caret line="348" column="1" selection-start-line="348" selection-start-column="1" selection-end-line="348" selection-end-column="1" />
+            <state relative-caret-position="287">
+              <caret line="353" column="9" selection-start-line="353" selection-start-column="9" selection-end-line="353" selection-end-column="9" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="main.cpp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="272">
+              <caret line="16" column="45" selection-start-line="16" selection-start-column="45" selection-end-line="16" selection-end-column="45" />
               <folding />
             </state>
           </provider>
@@ -65,8 +69,18 @@
       <file leaf-file-name="files.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/files.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="179">
-              <caret line="145" column="52" selection-start-line="145" selection-start-column="52" selection-end-line="145" selection-end-column="52" />
+            <state relative-caret-position="227">
+              <caret line="142" column="33" selection-start-line="142" selection-start-column="16" selection-end-line="142" selection-end-column="33" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="files.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/files.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="442">
+              <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="46" />
               <folding />
             </state>
           </provider>
@@ -107,7 +121,14 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="587">
               <caret line="110" column="16" selection-start-line="110" selection-start-column="16" selection-end-line="110" selection-end-column="16" />
-              <folding />
+              <folding>
+                <marker date="1460932405824" expanded="true" signature="69:127" placeholder="{...}" />
+                <marker date="1460932405824" expanded="true" signature="152:184" placeholder="{...}" />
+                <marker date="1460932405824" expanded="true" signature="213:233" placeholder="{...}" />
+                <marker date="1460932405824" expanded="true" signature="265:308" placeholder="{...}" />
+                <marker date="1460932405824" expanded="true" signature="361:486" placeholder="{...}" />
+                <marker date="1460932405824" expanded="true" signature="533:699" placeholder="{...}" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -139,18 +160,18 @@
         <option value="$PROJECT_DIR$/src/variables.h" />
         <option value="$PROJECT_DIR$/src/version_increment.cpp" />
         <option value="$PROJECT_DIR$/src/version_increment.h" />
-        <option value="$PROJECT_DIR$/src/commands.cpp" />
         <option value="$PROJECT_DIR$/src/commands.h" />
         <option value="$PROJECT_DIR$/src/input.cpp" />
         <option value="$PROJECT_DIR$/src/log.h" />
         <option value="$PROJECT_DIR$/src/string_utils.h" />
-        <option value="$PROJECT_DIR$/src/files.h" />
         <option value="$PROJECT_DIR$/src/string_utils.cpp" />
         <option value="$PROJECT_DIR$/src/path.h" />
         <option value="$PROJECT_DIR$/src/path.cpp" />
         <option value="$PROJECT_DIR$/src/log.cpp" />
-        <option value="$PROJECT_DIR$/src/files.cpp" />
         <option value="$PROJECT_DIR$/src/main.cpp" />
+        <option value="$PROJECT_DIR$/src/files.h" />
+        <option value="$PROJECT_DIR$/src/files.cpp" />
+        <option value="$PROJECT_DIR$/src/commands.cpp" />
         <option value="$PROJECT_DIR$/src/ymake.cpp" />
       </list>
     </option>
@@ -470,7 +491,14 @@
       <option name="project" value="LOCAL" />
       <updated>1460928796296</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="pliki źródłowe mogą być w podfolderach,&#10;resourcy mogą być w podkatalogach,&#10;cudzysłowy w nazwach plików przy generowaniu,&#10;opis linijek ymake przy tworzeniu nowego (init)">
+      <created>1460933160149</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1460933160149</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -484,7 +512,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32641292" sideWeight="0.50241256" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298731" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298731" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298731" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3298731" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24969843" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298731" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -509,8 +537,12 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="false" />
     <MESSAGE value="porządki w ymake, modułach, plikach projektu i formatowaniu" />
-    <option name="LAST_COMMIT_MESSAGE" value="porządki w ymake, modułach, plikach projektu i formatowaniu" />
+    <MESSAGE value="pliki źródłowe mogą być w podfolderach,&#10;resourcy mogą być w podkatalogach,&#10;cudzysłowy w nazwach plików przy generowaniu,&#10;opis linijek ymake przy tworzeniu nowego (init)" />
+    <option name="LAST_COMMIT_MESSAGE" value="pliki źródłowe mogą być w podfolderach,&#10;resourcy mogą być w podkatalogach,&#10;cudzysłowy w nazwach plików przy generowaniu,&#10;opis linijek ymake przy tworzeniu nowego (init)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -727,7 +759,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="587">
           <caret line="110" column="16" selection-start-line="110" selection-start-column="16" selection-end-line="110" selection-end-column="16" />
-          <folding />
+          <folding>
+            <marker date="1460932405824" expanded="true" signature="69:127" placeholder="{...}" />
+            <marker date="1460932405824" expanded="true" signature="152:184" placeholder="{...}" />
+            <marker date="1460932405824" expanded="true" signature="213:233" placeholder="{...}" />
+            <marker date="1460932405824" expanded="true" signature="265:308" placeholder="{...}" />
+            <marker date="1460932405824" expanded="true" signature="361:486" placeholder="{...}" />
+            <marker date="1460932405824" expanded="true" signature="533:699" placeholder="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -765,40 +804,40 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/files.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="52" />
+        <state relative-caret-position="442">
+          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="46" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/files.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="179">
-          <caret line="145" column="52" selection-start-line="145" selection-start-column="52" selection-end-line="145" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="11" column="73" selection-start-line="11" selection-start-column="73" selection-end-line="11" selection-end-column="73" />
+        <state relative-caret-position="227">
+          <caret line="142" column="33" selection-start-line="142" selection-start-column="16" selection-end-line="142" selection-end-column="33" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/commands.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-178">
-          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+        <state relative-caret-position="485">
+          <caret line="161" column="80" selection-start-line="161" selection-start-column="80" selection-end-line="161" selection-end-column="80" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="45" selection-start-line="16" selection-start-column="45" selection-end-line="16" selection-end-column="45" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ymake.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="464">
-          <caret line="348" column="1" selection-start-line="348" selection-start-column="1" selection-end-line="348" selection-end-column="1" />
+        <state relative-caret-position="287">
+          <caret line="353" column="9" selection-start-line="353" selection-start-column="9" selection-end-line="353" selection-end-column="9" />
           <folding />
         </state>
       </provider>

@@ -140,6 +140,33 @@ vector<string>* get_files_from_dir(string dir, string ext) {
     return files;
 }
 
+vector<string>* get_dirs_from_dir(string dir){
+    if (dir.length() == 0)
+        dir = ".";
+    if (!dir_exists(dir)) {
+        Log::error("brak folderu: " + dir);
+        return NULL;
+    }
+    WIN32_FIND_DATAA ffd;
+    HANDLE hFind = FindFirstFileA((dir + "\\*").c_str(), &ffd);
+    if (hFind == INVALID_HANDLE_VALUE) {
+        Log::error("blad otwierania folderu " + dir);
+        return NULL;
+    }
+    vector<string>* dirs = new vector<string>;
+    do {
+        const char* stemp = string(ffd.cFileName).c_str();
+        if (strcmp(stemp, ".") == 0) continue;
+        if (strcmp(stemp, "..") == 0) continue;
+        if (strcmp(stemp, "desktop.ini") == 0) continue;
+        if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) { //folder
+            dirs->push_back(ffd.cFileName);
+        }
+    } while (FindNextFileA(hFind, &ffd) != 0);
+    FindClose(hFind);
+    return dirs;
+}
+
 bool mkdir_if_n_exist(string dir) {
     if (!dir_exists(dir)) {
         if(system2("mkdir " + dir)){

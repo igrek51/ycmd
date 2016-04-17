@@ -18,11 +18,13 @@ bool mkdir_overwrite_file(string src, string file2);
 
 bool delete_file(string filename);
 
-vector<string> *get_all_lines(string filename);
+vector<string>* get_all_lines(string filename);
 
-vector<string> *get_nonempty_lines(string filename);
+vector<string>* get_nonempty_lines(string filename);
 
-vector<string> *get_files_from_dir(string dir, string ext = "");
+vector<string>* get_files_from_dir(string dir, string ext = "");
+
+vector<string>* get_dirs_from_dir(string dir);
 
 bool mkdir_if_n_exist(string dir);
 

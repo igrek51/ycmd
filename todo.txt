@@ -1,17 +1,8 @@
-pliki Ÿród³owe w podfolderach: utworzenie pliku .o formatu: fodler_folder2_plik.o, fodler_folder2_plik_2.o
 * w SRC z obs³ug¹ podkatalogów: src/*.cpp (lub wchodzenie rekurencyjnie wg³¹b folderów)
 
-test z zasobami w katalogu res (resource nie mo¿e byæ w podkatalogu, zasoby mog¹)
 zabezpieczenie przed powtarzaj¹cymi siê nazwami obj (warn przy dodawaniu do listy objs)
 lista plików zasobów zamiast pojedynczego pliku
 
-opakowywanie w "" lub konwersja spacji na "\ "
-cudzys³owy w nazwach plików przy generowaniu
-
-
-opis linijek ymake przy tworzeniu nowego (init), sprawdzenie, czy siê zapisz¹
-
-info w logach (zakoñczono czyszczenie), zakoñczono (debug)
 
 systemowe funkcje do osobnego modu³u (mkdir, list dir, system, shellexecute)
 2 ga³êzie: windows, linux, master (cross-platform)

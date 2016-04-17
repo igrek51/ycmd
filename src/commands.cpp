@@ -14,13 +14,13 @@ bool exec_commands(vector<string> *args) {
     string next2;
     int next;
     //log level
-    if (is_arg("--log=debug", args)) {
+    if (is_arg("--log=debug", args) || is_arg("--debug", args)) {
         Log::log_level = Log::DEBUG;
-    } else if (is_arg("--log=info", args)) {
+    } else if (is_arg("--log=info", args) || is_arg("--info", args)) {
         Log::log_level = Log::INFO;
-    } else if (is_arg("--log=warn", args)) {
+    } else if (is_arg("--log=warn", args) || is_arg("--warn", args)) {
         Log::log_level = Log::WARN;
-    } else if (is_arg("--log=error", args)) {
+    } else if (is_arg("--log=error", args) || is_arg("--error", args)) {
         Log::log_level = Log::ERROR;
     } else if (is_arg("--log=off", args)) {
         Log::log_level = Log::OFF;
@@ -159,7 +159,7 @@ void show_help() {
     cout << "--setenv [var] [value] - ustaw zmienna srodowiskowa" << endl;
     cout << "--setpath [path] - ustaw zmienna srodowiskowa PATH" << endl;
     cout << "--addpath [path] - dodaj do zmiennej srodowiskowej PATH" << endl;
-    cout << "--log=[debug|info|warn|error|off] - poziom wyswietlania komunikatow" << endl;
+    cout << "--log=[debug|info|warn|error|off] (--debug, --info, --warn, --error) - poziom wyswietlania komunikatow" << endl;
     cout << "-p - czekaj na wcisniecie klawisza po zakonczeniu" << endl;
     cout << "--pe - czekaj na wcisniecie w przypadku bledu" << endl;
 }
