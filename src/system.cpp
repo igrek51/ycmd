@@ -1,7 +1,5 @@
 #include "system.h"
-#include "files.h"
-#include "io.h"
-#include "string_utils.h"
+#include "args.h"
 #include "path.h"
 
 #include <windows.h>
@@ -9,6 +7,7 @@
 #include <sstream>
 
 bool system2(string cmd){
+    Log::debug("system :: " + cmd);
     if(system(cmd.c_str())==0)
         return true;
     Log::error("Blad polecenia: "+cmd);

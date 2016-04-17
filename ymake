@@ -1,7 +1,7 @@
 //ymake v1.5.51
 COMPILER = g++
 
-COMPILER_PATH = C:\MinGW\bin
+COMPILER_PATH = C:/MinGW/bin
 
 SRC_PATH = src
 

@@ -1,12 +1,12 @@
-#ifndef YMAKE_DATA_H
-#define YMAKE_DATA_H
+#ifndef YMAKE_DATA_SOURCE_H
+#define YMAKE_DATA_SOURCE_H
 
 #include <iostream>
 #include <vector>
 
 using namespace std;
 
-class YmakeData {
+class YmakeDataSource {
 public:
     string compiler;
     string compiler_path;
@@ -20,10 +20,13 @@ public:
     string resource;
     string version_file;
 
-    YmakeData(string filename);
+    YmakeDataSource(string filename);
+
     bool validate();
-    vector<string>* getSources();
-    vector<string>* getHeaders();
+
+    vector<string> *getSources();
+
+    vector<string> *getHeaders();
 };
 
 #endif

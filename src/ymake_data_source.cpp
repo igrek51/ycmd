@@ -1,14 +1,13 @@
-#include "ymake_data.h"
+#include "ymake_data_source.h"
 #include "variables.h"
-#include "string_utils.h"
 #include "log.h"
 #include "path.h"
 
-YmakeData::YmakeData(string filename){
+YmakeDataSource::YmakeDataSource(string filename) {
     filename = Path::reformat(filename);
-    vector<Variable*>* variables = get_variables(filename);
-    if(variables==NULL){
-        Log::error("brak poprawnego pliku \""+filename+"\"");
+    vector<Variable *> *variables = get_variables(filename);
+    if (variables == NULL) {
+        Log::error("brak poprawnego pliku \"" + filename + "\"");
         return;
     }
     //odczytanie z pliku parametrów
@@ -24,30 +23,30 @@ YmakeData::YmakeData(string filename){
     resource = get_var_string(variables, "RESOURCE");
     version_file = get_var_string(variables, "VERSION_FILE");
 
-    for(unsigned int i=0; i<variables->size(); i++){
+    for (unsigned int i = 0; i < variables->size(); i++) {
         delete variables->at(i);
     }
     delete variables;
 }
 
-bool YmakeData::validate(){
-    if(compiler.length()==0) compiler = "g++";
-    if(output.length()==0) output = "main.exe";
+bool YmakeDataSource::validate() {
+    if (compiler.length() == 0) compiler = "g++";
+    if (output.length() == 0) output = "main.exe";
     output = Path::reformat(output);
-    if(compiler_path.length()==0){
+    if (compiler_path.length() == 0) {
         Log::error("Brak sciezki do kompilatora (COMPILER_PATH)");
         return false;
     }
     compiler_path = Path::reformat(compiler_path);
-    if(compiler_path.compare(".")==0){
+    if (compiler_path.compare(".") == 0) {
         compiler_path = "";
     }
-    if(src.length()==0){
+    if (src.length() == 0) {
         Log::error("Brak plikow zrodlowych (SRC)");
         return false;
     }
     src_path = Path::reformat(src_path);
-    if(src_path.compare(".")==0){
+    if (src_path.compare(".") == 0) {
         src_path = "";
     }
     resource = Path::reformat(resource);
@@ -55,12 +54,15 @@ bool YmakeData::validate(){
     return true;
 }
 
-vector<string>* YmakeData::getSources(){
-    vector<string>* srcs = get_list_ex(src, src_path);
+vector<string> *YmakeDataSource::getSources() {
+    vector<string> *srcs = get_list_ex(src, src_path);
+    if (srcs->size() == 0) {
+        Log::error("Lista plikow zrodlowych jest pusta");
+    }
     return srcs;
 }
 
-vector<string>* YmakeData::getHeaders(){
-    vector<string>* headersList = get_list_ex(headers, src_path);
+vector<string> *YmakeDataSource::getHeaders() {
+    vector<string> *headersList = get_list_ex(headers, src_path);
     return headersList;
 }

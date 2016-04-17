@@ -25,11 +25,15 @@ public:
     static const int DEBUG = 4;
 
     static void error(string s);
+
     static void warn(string s);
+
     static void info(string s);
+
     static void debug(string s);
 
     static bool isError();
+
 private:
     static void echo(string s, int level);
 };

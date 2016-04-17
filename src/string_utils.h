@@ -7,9 +7,10 @@
 using namespace std;
 
 string trim_spaces(string s);
+
 string trim_quotes(string s);
 
-vector<string>* get_param_list(string lista);
+vector<string> *get_param_list(string lista);
 
 bool ends_with(string name, string ext);
 

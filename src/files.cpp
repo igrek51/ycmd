@@ -1,5 +1,5 @@
 #include "files.h"
-#include "io.h"
+#include "args.h"
 #include "string_utils.h"
 #include "system.h"
 #include "path.h"
@@ -7,52 +7,52 @@
 #include <fstream>
 #include <windows.h>
 
-bool file_exists(string filename){
+bool file_exists(string filename) {
     fstream plik;
-    plik.open(filename.c_str(),fstream::in|fstream::binary);
-    if(plik.good()){
+    plik.open(filename.c_str(), fstream::in | fstream::binary);
+    if (plik.good()) {
         plik.close();
         return true;
-    }else{
+    } else {
         plik.close();
         return false;
     }
 }
 
-bool dir_exists(string name){
+bool dir_exists(string name) {
     DWORD ftyp = GetFileAttributesA(name.c_str());
-    if(ftyp==INVALID_FILE_ATTRIBUTES) return false;
-    if(ftyp&FILE_ATTRIBUTE_DIRECTORY) return true;
+    if (ftyp == INVALID_FILE_ATTRIBUTES) return false;
+    if (ftyp & FILE_ATTRIBUTE_DIRECTORY) return true;
     return false;
 }
 
 
-bool files_equal(string file1, string file2){
-    if(!file_exists(file1))	return false;
-    if(!file_exists(file2))	return false;
+bool files_equal(string file1, string file2) {
+    if (!file_exists(file1)) return false;
+    if (!file_exists(file2)) return false;
     fstream plik1, plik2;
     //rozmiary plików
-    plik1.open(file1.c_str(), fstream::in|fstream::binary);
+    plik1.open(file1.c_str(), fstream::in | fstream::binary);
     plik1.seekg(0, plik1.end);
     unsigned int fsize1 = plik1.tellg();
-    plik2.open(file2.c_str(), fstream::in|fstream::binary);
+    plik2.open(file2.c_str(), fstream::in | fstream::binary);
     plik2.seekg(0, plik2.end);
     unsigned int fsize2 = plik2.tellg();
-    if(fsize1!=fsize2){ //różne rozmiary
+    if (fsize1 != fsize2) { //różne rozmiary
         plik1.close();
         plik2.close();
         return false;
     }
     //zawartość plików
-    char *plik1_tab = new char [fsize1];
+    char *plik1_tab = new char[fsize1];
     plik1.seekg(0, plik1.beg);
     plik1.read(plik1_tab, fsize1);
     plik1.close();
-    char *plik2_tab = new char [fsize2];
+    char *plik2_tab = new char[fsize2];
     plik2.seekg(0, plik2.beg);
     plik2.read(plik2_tab, fsize2);
     plik2.close();
-    if(memcmp(plik1_tab, plik2_tab, fsize1)!=0){ //różna zawartość
+    if (memcmp(plik1_tab, plik2_tab, fsize1) != 0) { //różna zawartość
         delete[] plik1_tab;
         delete[] plik2_tab;
         return false;
@@ -62,45 +62,45 @@ bool files_equal(string file1, string file2){
     return true;
 }
 
-bool copy_files(string file1, string file2){
-    return CopyFile(file1.c_str(),file2.c_str(),false);
+bool copy_files(string file1, string file2) {
+    return CopyFile(file1.c_str(), file2.c_str(), false);
 }
 
-bool delete_file(string filename){
+bool delete_file(string filename) {
     return DeleteFile(filename.c_str());
 }
 
 
-vector<string>* get_all_lines(string filename){
+vector<string> *get_all_lines(string filename) {
     filename = Path::reformat(filename);
     fstream plik;
-    plik.open(filename.c_str(),fstream::in|fstream::binary);
-    if(!plik.good()){
+    plik.open(filename.c_str(), fstream::in | fstream::binary);
+    if (!plik.good()) {
         plik.close();
         return NULL;
     }
-    vector<string>* lines = new vector<string>;
+    vector<string> *lines = new vector<string>;
     string linia;
-    do{
-        getline(plik,linia,'\n'); //rozdzielenie znakami \n
-        for(unsigned int i=0; i<linia.length(); i++){ //usunięcie znaków \r
-            if(linia[i]=='\r'){
-                linia.erase(linia.begin()+i);
+    do {
+        getline(plik, linia, '\n'); //rozdzielenie znakami \n
+        for (unsigned int i = 0; i < linia.length(); i++) { //usunięcie znaków \r
+            if (linia[i] == '\r') {
+                linia.erase(linia.begin() + i);
                 i--;
             }
         }
         lines->push_back(linia);
-    }while(!plik.eof());
+    } while (!plik.eof());
     plik.close();
     return lines;
 }
 
-vector<string>* get_nonempty_lines(string filename){
-    vector<string>* lines = get_all_lines(filename);
-    if(lines==NULL) return NULL;
-    for(unsigned int i=0; i<lines->size(); i++){
-        if(lines->at(i).length()==0){ //usunięcie pustych elementów
-            lines->erase(lines->begin()+i);
+vector<string> *get_nonempty_lines(string filename) {
+    vector<string> *lines = get_all_lines(filename);
+    if (lines == NULL) return NULL;
+    for (unsigned int i = 0; i < lines->size(); i++) {
+        if (lines->at(i).length() == 0) { //usunięcie pustych elementów
+            lines->erase(lines->begin() + i);
             i--;
         }
     }
@@ -108,40 +108,40 @@ vector<string>* get_nonempty_lines(string filename){
 }
 
 
-vector<string>* get_files_from_dir(string dir, string ext){
-    if(ext=="*")
+vector<string> *get_files_from_dir(string dir, string ext) {
+    if (ext == "*")
         ext = "";
-    if(dir.length()==0)
+    if (dir.length() == 0)
         dir = ".";
-    if(!dir_exists(dir)){
-        Log::error("brak folderu: "+dir);
+    if (!dir_exists(dir)) {
+        Log::error("brak folderu: " + dir);
         return NULL;
     }
     WIN32_FIND_DATAA ffd;
-    HANDLE hFind = FindFirstFileA((dir+"\\*").c_str(), &ffd);
-    if(hFind==INVALID_HANDLE_VALUE){
-        Log::error("blad otwierania folderu "+dir);
+    HANDLE hFind = FindFirstFileA((dir + "\\*").c_str(), &ffd);
+    if (hFind == INVALID_HANDLE_VALUE) {
+        Log::error("blad otwierania folderu " + dir);
         return NULL;
     }
-    vector<string>* files = new vector<string>;
-    do{
+    vector<string> *files = new vector<string>;
+    do {
         const char *stemp = string(ffd.cFileName).c_str();
-        if(strcmp(stemp,".")==0) continue;
-        if(strcmp(stemp,"..")==0) continue;
-        if(strcmp(stemp,"desktop.ini")==0) continue;
-        if(!(ffd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)){ //plik
-            if(ends_with(ffd.cFileName, ext)){
+        if (strcmp(stemp, ".") == 0) continue;
+        if (strcmp(stemp, "..") == 0) continue;
+        if (strcmp(stemp, "desktop.ini") == 0) continue;
+        if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) { //plik
+            if (ends_with(ffd.cFileName, ext)) {
                 files->push_back(ffd.cFileName);
             }
         }
-    }while(FindNextFileA(hFind, &ffd)!=0);
+    } while (FindNextFileA(hFind, &ffd) != 0);
     FindClose(hFind);
     return files;
 }
 
-bool mkdir_if_n_exist(string dir){
-    if(!dir_exists(dir)){
-        return system2("mkdir "+dir);
+bool mkdir_if_n_exist(string dir) {
+    if (!dir_exists(dir)) {
+        return system2("mkdir " + dir);
     }
     return true;
 }

@@ -4,7 +4,7 @@ CFLAGS = -c -Wall
 LFLAGS = -Wall -s
 LIBS = 
 OUTPUT_NAME = ycmd.exe
-OBJS = obj/commands.cpp.o obj/files.cpp.o obj/io.cpp.o obj/main.cpp.o obj/system.cpp.o obj/versioning.cpp.o obj/ymake.cpp.o
+OBJS = obj\commands.o obj\files.o obj\io.o obj\log.o obj\main.o obj\path.o obj\string_utils.o obj\system.o obj\variables.o obj\versioning.o obj\ymake.o obj\ymake_data.o
 
 
 all: $(OBJS)
@@ -15,24 +15,39 @@ clean:
 	del /Q $(BIN)\$(OUTPUT_NAME)
 
 
-obj/commands.cpp.o: commands.cpp
-	$(CC) $(CFLAGS) commands.cpp -o obj/commands.cpp.o
+obj\commands.o: src\commands.cpp
+	$(CC) $(CFLAGS) src\commands.cpp -o "obj\commands.o"
 
-obj/files.cpp.o: files.cpp
-	$(CC) $(CFLAGS) files.cpp -o obj/files.cpp.o
+obj\files.o: src\files.cpp
+	$(CC) $(CFLAGS) src\files.cpp -o "obj\files.o"
 
-obj/io.cpp.o: io.cpp
-	$(CC) $(CFLAGS) io.cpp -o obj/io.cpp.o
+obj\io.o: src\io.cpp
+	$(CC) $(CFLAGS) src\io.cpp -o "obj\io.o"
 
-obj/main.cpp.o: main.cpp
-	$(CC) $(CFLAGS) main.cpp -o obj/main.cpp.o
+obj\log.o: src\log.cpp
+	$(CC) $(CFLAGS) src\log.cpp -o "obj\log.o"
 
-obj/system.cpp.o: system.cpp
-	$(CC) $(CFLAGS) system.cpp -o obj/system.cpp.o
+obj\main.o: src\main.cpp
+	$(CC) $(CFLAGS) src\main.cpp -o "obj\main.o"
 
-obj/versioning.cpp.o: versioning.cpp
-	$(CC) $(CFLAGS) versioning.cpp -o obj/versioning.cpp.o
+obj\path.o: src\path.cpp
+	$(CC) $(CFLAGS) src\path.cpp -o "obj\path.o"
 
-obj/ymake.cpp.o: ymake.cpp
-	$(CC) $(CFLAGS) ymake.cpp -o obj/ymake.cpp.o
+obj\string_utils.o: src\string_utils.cpp
+	$(CC) $(CFLAGS) src\string_utils.cpp -o "obj\string_utils.o"
+
+obj\system.o: src\system.cpp
+	$(CC) $(CFLAGS) src\system.cpp -o "obj\system.o"
+
+obj\variables.o: src\variables.cpp
+	$(CC) $(CFLAGS) src\variables.cpp -o "obj\variables.o"
+
+obj\versioning.o: src\versioning.cpp
+	$(CC) $(CFLAGS) src\versioning.cpp -o "obj\versioning.o"
+
+obj\ymake.o: src\ymake.cpp
+	$(CC) $(CFLAGS) src\ymake.cpp -o "obj\ymake.o"
+
+obj\ymake_data.o: src\ymake_data.cpp
+	$(CC) $(CFLAGS) src\ymake_data.cpp -o "obj\ymake_data.o"
 

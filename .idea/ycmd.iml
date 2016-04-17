@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="CPP_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/input.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/system.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/system.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/input.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/variables.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/log.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/args.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/string_utils.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/path.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/variables.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ymake.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/string_utils.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/commands.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/commands.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ymake_data_source.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ymake.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ymake_data_source.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/version_increment.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/files.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/log.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/files.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/args.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/path.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/version_increment.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="Header Search Paths">
+        <CLASSES>
+          <root url="file://C:/MinGW/lib/gcc/mingw32/4.4.1/include" />
+          <root url="file://C:/MinGW/lib/gcc/mingw32/4.4.1/include-fixed" />
+          <root url="file://C:/MinGW/include" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file://C:/MinGW/lib/gcc/mingw32/4.4.1/include" />
+          <root url="file://C:/MinGW/lib/gcc/mingw32/4.4.1/include-fixed" />
+          <root url="file://C:/MinGW/include" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+</module>
