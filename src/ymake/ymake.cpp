@@ -8,7 +8,7 @@
 #include <fstream>
 #include <sstream>
 
-bool ymake_analyze_headers(YmakeDataSource* ds, bool& rebuild) {
+bool ymake_analyze_headers(YmakeDataSource* ds, bool& rebuild, bool& change) {
     vector<string>* headers = ds->getHeaders();
     for (unsigned int i = 0; i < headers->size(); i++) {
         string file_header = Path::append(ds->src_path, headers->at(i));
@@ -23,6 +23,7 @@ bool ymake_analyze_headers(YmakeDataSource* ds, bool& rebuild) {
         //przebudowa całego projektu
         Log::debug("Zmodyfikowany plik naglowkowy: " + file_header);
         rebuild = true;
+        change = true;
         //skopiowanie nowej wersji z nadpisaniem
         if (!mkdir_overwrite_file(file_header, file_header_prv)) {
             Log::error("blad kopiowania do pliku " + file_header_prv);
@@ -34,7 +35,7 @@ bool ymake_analyze_headers(YmakeDataSource* ds, bool& rebuild) {
     return true;
 }
 
-bool ymake_analyze_srcs(YmakeDataSource* ds, bool& rebuild, vector<string>* objs) {
+bool ymake_analyze_srcs(YmakeDataSource* ds, bool& rebuild, bool& change, vector<string>* objs) {
     vector<string>* srcs = ds->getSources();
     if (srcs->size() == 0) {
         delete srcs;
@@ -57,9 +58,11 @@ bool ymake_analyze_srcs(YmakeDataSource* ds, bool& rebuild, vector<string>* objs
             if (file_exists(file_src_obj)) {
                 if (files_equal(file_src, file_src_prv)) {
                     continue;
+                }else{
+                    Log::debug("Zmodyfikowany plik: " + file_src);
                 }
             }
-            rebuild = true;
+            change = true;
         }
         //kompilacja zmienionych plików
         stringstream ss;
@@ -82,7 +85,7 @@ bool ymake_analyze_srcs(YmakeDataSource* ds, bool& rebuild, vector<string>* objs
     return true;
 }
 
-bool ymake_analyze_resources(YmakeDataSource* ds, bool& rebuild, vector<string>* objs) {
+bool ymake_analyze_resources(YmakeDataSource* ds, bool& change, vector<string>* objs) {
     if (ds->resource.length() > 0) {
         if (!file_exists(ds->resource)) {
             Log::error("brak pliku zasobow: " + ds->resource);
@@ -95,9 +98,9 @@ bool ymake_analyze_resources(YmakeDataSource* ds, bool& rebuild, vector<string>*
                 ".o";
         objs->push_back(resource_obj);
         if (!files_equal(ds->resource, resource_prv) || !file_exists(resource_obj)) {
-            rebuild = true;
+            change = true;
             Log::info("Dodawanie zasobow: " + ds->resource);
-            //TOOD tworzenie zasobów w linuxie
+            //TODO tworzenie zasobów w linuxie
             if (!system2("windres \"" + ds->resource + "\" \"" + resource_obj + "\""))
                 return false;
             if (!mkdir_overwrite_file(ds->resource, resource_prv)) {
@@ -149,18 +152,19 @@ bool ymake(string ymake_filename) {
 
     //znalezienie zmienionych plików nagłówkowych
     bool rebuild = false;
-    if (!ymake_analyze_headers(ds, rebuild)) return false;
+    bool change = false;
+    if (!ymake_analyze_headers(ds, rebuild, change)) return false;
     if (rebuild) {
         Log::info("Przebudowywanie...");
     }
 
     vector<string>* objs = new vector<string>();
-    if (!ymake_analyze_srcs(ds, rebuild, objs)) return false;
-    if (!ymake_analyze_resources(ds, rebuild, objs)) return false;
+    if (!ymake_analyze_srcs(ds, rebuild, change, objs)) return false;
+    if (!ymake_analyze_resources(ds, change, objs)) return false;
 
     //budowanie
     mkdir_if_n_exist("bin");
-    if (rebuild) {
+    if (rebuild || change) {
         //inkrementacja wersji
         if (!ymake_version_increment(ds)) return false;
         //linkowanie

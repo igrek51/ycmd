@@ -1,7 +1,5 @@
-//ymake v1.5.51
+//ymake v1.6.63
 COMPILER = g++
-
-COMPILER_PATH = C:/MinGW/bin
 
 SRC_PATH = src
 
@@ -9,7 +7,7 @@ SRC = *.cpp ymake/ymake.cpp ymake/ymake_data_source.cpp
 
 HEADERS = *.h -version.h ymake/ymake.h ymake/ymake_data_source.h
 
-OUTPUT = ycmd.exe
+OUTPUT = ycmd
 
 LIBS =
 
