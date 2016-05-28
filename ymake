@@ -13,7 +13,7 @@ OUTPUT = ycmd.exe
 
 LIBS =
 
-COMPILER_FLAGS = -Wall
+COMPILER_FLAGS = -Wall -std=c++11
 
 LINKER_FLAGS = -Wall -s
 

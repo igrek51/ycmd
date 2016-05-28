@@ -31,13 +31,12 @@ bool set_env(string variable, string value) {
 }
 
 bool add_env_path(string new_path) {
-    char* env_path = getenv ("PATH");
+    char* env_path = getenv("PATH");
     if (env_path == nullptr) {
         Log::error("Blad pobrania zmiennej srodowiskowej PATH");
         return false;
     }
     new_path = new_path + ":" + env_path;
-    delete env_path;
     return set_env("PATH", new_path);
 }
 
