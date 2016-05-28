@@ -39,7 +39,7 @@ bool next_arg(string szukany, vector<string> *args, string &next_text, string do
     int i = find_arg(szukany, args);
     if (i == -1) return false; //nie znalazło szukanego argumentu
     if (i + 1 < (int) args->size()) { //jeśli istnieje następny element
-        next_text = args->at(i + 1);
+        next_text = args->at((unsigned int) (i + 1));
         return true;
     } else { //nie istnieje następny element
         if (domyslny.length() > 0) { //została podana wartość domyślna
@@ -59,12 +59,12 @@ bool next_arg2(string szukany, vector<string> *args, string &next_text1, string 
     int i = find_arg(szukany, args);
     if (i == -1) return false; //nie znalazło szukanego argumentu
     if (i + 2 < (int) args->size()) { //jeśli istnieją 2 następne elementy
-        next_text1 = args->at(i + 1);
-        next_text2 = args->at(i + 2);
+        next_text1 = args->at((unsigned int) (i + 1));
+        next_text2 = args->at((unsigned int) (i + 2));
         return true;
     } else if (i + 1 < (int) args->size()) { //istnieje 1 następny element
         if (domyslny2.length() > 0) { //została podana 2. wartość domyślna
-            next_text1 = args->at(i + 1);
+            next_text1 = args->at((unsigned int) (i + 1));
             next_text2 = domyslny2;
             Log::debug(
                     "Przyjeto domyslna wartosc 2. parametru po \"" + szukany + "\": " + domyslny2);

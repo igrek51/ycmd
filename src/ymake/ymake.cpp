@@ -7,7 +7,6 @@
 
 #include <fstream>
 #include <sstream>
-#include <windows.h>
 
 bool ymake_analyze_headers(YmakeDataSource* ds, bool& rebuild) {
     vector<string>* headers = ds->getHeaders();
@@ -323,17 +322,6 @@ bool run_from_ymake(string ymake_filename, int mode) {
         ss << "\"" << ymake->output << "\"";
         Log::info("Uruchamianie: " + ss.str());
         return system2(ss.str());
-    } else if (mode == 2) { //run start
-        ss << "start \"\" \"" << ymake->output << "\"";
-        Log::info("Uruchamianie: " + ss.str());
-        return system2(ss.str());
-    } else if (mode == 3) { //shelexecute
-        if ((int) ShellExecute(0, "open", ymake->output.c_str(), "", 0, SW_SHOW) > 32) {
-            Log::info("Uruchomiono \"" + ymake->output + "\"...");
-            return true;
-        }
-        Log::error("Blad uruchamiania poleceniem ShellExecute: \"" + ymake->output + "\"");
-        return false;
     }
     return false;
 }

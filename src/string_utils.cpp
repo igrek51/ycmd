@@ -37,11 +37,11 @@ vector<string>* get_param_list(string lista) {
         if (lista[i] == '\"') cudzyslow = !cudzyslow;
         if (lista[i] == ',' && !cudzyslow) lista[i] = ' ';
         if (lista[i] == ' ' && !cudzyslow && i > 0) {
-            newStr = trim_spaces(lista.substr(0, i));
+            newStr = trim_spaces(lista.substr(0, (unsigned int) i));
             if(newStr.length() > 0) {
                 kontener->push_back(newStr);
             }
-            lista = lista.substr(i + 1);
+            lista = lista.substr((unsigned int) (i + 1));
             i = -1;
         }
     }
@@ -55,8 +55,7 @@ bool ends_with(string name, string ext) {
     if (ext.length() == 0) return true;
     if (ext.length() > name.length()) return false;
     name = name.substr(name.length() - ext.length(), ext.length());
-    if (name == ext) return true;
-    return false;
+    return name == ext;
 }
 
 

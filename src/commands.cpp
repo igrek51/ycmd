@@ -47,7 +47,7 @@ bool exec_commands(vector<string> *args) {
     //POLECENIA
     if (next_arg_number("-e", args, next) ||
         next_arg_number("--exec", args, next)) { //wykonaj polecenia z parametrów
-        for (unsigned int i = next; i < args->size(); i++) {
+        for (unsigned int i = (unsigned int) next; i < args->size(); i++) {
             if (!system_echo(args->at(i)))
                 return false; //przerwij łancuch w przypadku błędu
         }
@@ -55,7 +55,7 @@ bool exec_commands(vector<string> *args) {
                next_arg_number("--e1", args, next)) { //wykonaj jako 1 polecenie
         //złożenie argumentów w jedno polecenie
         stringstream ss;
-        for (unsigned int i = next; i < args->size(); i++) {
+        for (unsigned int i = (unsigned int) next; i < args->size(); i++) {
             ss << args->at(i);
             if (i < args->size() - 1) ss << " ";
         }
@@ -93,18 +93,6 @@ bool exec_commands(vector<string> *args) {
             return false;
     } else if (next_arg("--run", args, next1, "ymake")) { //uruchom aplikację z ymake
         if (!run_from_ymake(next1, 1)) {
-            Log::error("blad uruchamiania z pliku: " + next1);
-            return false;
-        }
-    } else if (next_arg("--run-start", args, next1,
-                        "ymake")) { //uruchom aplikację z ymake (z poleceniem start)
-        if (!run_from_ymake(next1, 2)) {
-            Log::error("blad uruchamiania z pliku: " + next1);
-            return false;
-        }
-    } else if (next_arg("--run-shell", args, next1,
-                        "ymake")) { //uruchom aplikację przez shellexecute
-        if (!run_from_ymake(next1, 3)) {
             Log::error("blad uruchamiania z pliku: " + next1);
             return false;
         }
@@ -147,8 +135,6 @@ void show_help() {
     cout << "ycmd -i(--input) - czekaj na wpisanie polecenia" << endl;
     cout << "ycmd --clean - wyczysc folder prv i obj" << endl;
     cout << "ycmd --run [ymake] - uruchom z pliku ymake" << endl;
-    cout << "ycmd --run-start [ymake] - uruchom poleceniem start z pliku ymake" << endl;
-    cout << "ycmd --run-shell [ymake] - uruchom poleceniem ShellExecute z pliku ymake" << endl;
     cout << "ycmd --version++ [version.h] - zwieksz numer wersji w pliku" << endl;
     cout << "ycmd --init - utworz plik ymake oraz plik wersji version.h" << endl;
     cout << "ycmd --init-ymake - utworz plik ymake" << endl;
