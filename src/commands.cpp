@@ -120,7 +120,7 @@ bool exec_commands(vector<string> *args) {
 }
 
 void show_help() {
-    cout << "ycmd v " << IO::version << endl << endl;
+    cout << "ycmd v " << IO::version << " (linux)" << endl << endl;
     cout << "Polecenia:" << endl;
     cout << "ycmd -e(--exec) [polecenie1] [polecenie2] [...] - wykonaj polecenia" << endl;
     cout << "ycmd -1(--e1) [po le ce nie] - wykonaj jako jedno polecenie" << endl;
