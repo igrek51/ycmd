@@ -1,7 +1,6 @@
 #include "commands.h"
 #include "args.h"
-
-#include <conio.h>
+#include "system.h"
 
 using namespace std;
 

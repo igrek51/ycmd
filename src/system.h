@@ -21,4 +21,6 @@ string get_time_date();
 
 bool count_time(string exec);
 
+char getch();
+
 #endif
