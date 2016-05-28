@@ -3,7 +3,7 @@
 #include "args.h"
 #include "system.h"
 #include "version_increment.h"
-#include "ymake.h"
+#include "ymake/ymake.h"
 #include "input.h"
 #include "path.h"
 

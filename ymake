@@ -5,9 +5,9 @@ COMPILER_PATH = C:/MinGW/bin
 
 SRC_PATH = src
 
-SRC = *.cpp
+SRC = *.cpp ymake/ymake.cpp ymake/ymake_data_source.cpp 
 
-HEADERS = *.h -version.h
+HEADERS = *.h -version.h ymake/ymake.h ymake/ymake_data_source.h
 
 OUTPUT = ycmd.exe
 

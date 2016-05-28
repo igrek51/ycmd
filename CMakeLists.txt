@@ -4,7 +4,7 @@ set(PROJECT_NAME ycmd)
 set(WORKDIR D:/Igrek/C++/ycmd)
 
 set(YCMD_DIR D:/Igrek/C++/ycmd/twujstary/ycmd.exe)
-set(SHITFILE src/main.cpp src/commands.cpp src/files.cpp src/args.cpp src/log.cpp src/path.cpp src/string_utils.cpp src/system.cpp src/variables.cpp src/version_increment.cpp src/ymake.cpp src/ymake_data_source.cpp src/input.cpp)
+set(SHITFILE src/main.cpp src/commands.cpp src/files.cpp src/args.cpp src/log.cpp src/path.cpp src/string_utils.cpp src/system.cpp src/variables.cpp src/version_increment.cpp src/ymake/ymake.cpp src/ymake/ymake_data_source.cpp src/input.cpp)
 
 project(${PROJECT_NAME})
 
