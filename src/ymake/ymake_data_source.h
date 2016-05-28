@@ -9,7 +9,6 @@ using namespace std;
 class YmakeDataSource {
 public:
     string compiler;
-    string compiler_path;
     string src;
     string headers;
     string src_path;

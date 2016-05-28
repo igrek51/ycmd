@@ -12,7 +12,6 @@ YmakeDataSource::YmakeDataSource(string filename) {
     }
     //odczytanie z pliku parametrów
     compiler = get_var_string(variables, "COMPILER");
-    compiler_path = get_var_string(variables, "COMPILER_PATH");
     src = get_var_string(variables, "SRC");
     headers = get_var_string(variables, "HEADERS");
     src_path = get_var_string(variables, "SRC_PATH");
@@ -33,14 +32,6 @@ bool YmakeDataSource::validate() {
     if (compiler.length() == 0) compiler = "g++";
     if (output.length() == 0) output = "main.exe";
     output = Path::reformat(output);
-    if (compiler_path.length() == 0) {
-        Log::error("Brak sciezki do kompilatora (COMPILER_PATH)");
-        return false;
-    }
-    compiler_path = Path::reformat(compiler_path);
-    if (compiler_path.compare(".") == 0) {
-        compiler_path = "";
-    }
     if (src.length() == 0) {
         Log::error("Brak plikow zrodlowych (SRC)");
         return false;

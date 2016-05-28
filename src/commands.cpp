@@ -83,9 +83,9 @@ bool exec_commands(vector<string> *args) {
                next_arg("--ymake", args, next1, "ymake")) { //skompiluj
         if (!ymake(next1))
             return false;
-    } else if (next_arg2("--ymake-bat", args, next1, next2, "ymake",
-                         "build.bat")) { //generuj plik .bat
-        if (!ymake_generate_bat(next1, next2))
+    } else if (next_arg2("--ymake-bash", args, next1, next2, "ymake",
+                         "build.sh")) { //generuj plik bash
+        if (!ymake_generate_bash(next1, next2))
             return false;
     } else if (next_arg2("--ymake-makefile", args, next1, next2, "ymake",
                          "Makefile")) { //generuj plik makefile
@@ -126,7 +126,7 @@ void show_help() {
     cout << "ycmd -1(--e1) [po le ce nie] - wykonaj jako jedno polecenie" << endl;
     cout << "ycmd -f(--file) [plik] - wykonaj wiersze z pliku (przerwij w przypadku bledu)" << endl;
     cout << "ycmd -y(--ymake) [ymake] - zbuduj na podstawie pliku ymake" << endl;
-    cout << "ycmd --ymake-bat [ymake] [build.bat] - utworz plik .bat na podstawie pliku ymake" <<
+    cout << "ycmd --ymake-bash [ymake] [build.sh] - utworz plik .sh na podstawie pliku ymake" <<
     endl;
     cout <<
     "ycmd --ymake-makefile [ymake] [Makefile] - utworz plik Makefile na podstawie pliku ymake" <<

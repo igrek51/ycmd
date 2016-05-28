@@ -18,7 +18,7 @@ bool ymake_version_increment(YmakeDataSource *ds);
 
 bool ymake_linker_build(YmakeDataSource *ds, vector<string> *objs);
 
-bool ymake_generate_bat(string ymake_filename, string output_filename);
+bool ymake_generate_bash(string ymake_filename, string output_filename);
 
 bool ymake_generate_makefile(string ymake_filename, string output_filename);
 
