@@ -1,7 +1,7 @@
 #include "ymake_data_source.h"
-#include "variables.h"
-#include "log.h"
-#include "path.h"
+#include "../variables.h"
+#include "../log.h"
+#include "../path.h"
 
 YmakeDataSource::YmakeDataSource(string filename) {
     filename = Path::reformat(filename);

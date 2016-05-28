@@ -1,9 +1,9 @@
 #include "ymake.h"
-#include "files.h"
-#include "version_increment.h"
-#include "args.h"
-#include "system.h"
-#include "path.h"
+#include "../files.h"
+#include "../version_increment.h"
+#include "../args.h"
+#include "../system.h"
+#include "../path.h"
 
 #include <fstream>
 #include <sstream>
