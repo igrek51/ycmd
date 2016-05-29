@@ -108,6 +108,11 @@ bool exec_commands(vector<string> *args) {
         return input_cmd();
     } else if (is_arg("--clean", args)) { //wyczysc folder prv
         return clean_all();
+    } else if (next_arg("--rebuild", args, next1, "ymake")) { //przebuduj
+        if(!clean_all())
+            return false;
+        if (!ymake(next1))
+            return false;
     } else if (next_arg("--version++", args, next1, "version.h")) { //zwiększ wersję w pliku
         return version_increment(Path::reformat(next1));
     } else if (is_arg("--test", args)) {
@@ -134,6 +139,7 @@ void show_help() {
     cout << "ycmd -t(--time) [polecenie] - zmierz czas wykonania polecenia" << endl;
     cout << "ycmd -i(--input) - czekaj na wpisanie polecenia" << endl;
     cout << "ycmd --clean - wyczysc folder prv i obj" << endl;
+    cout << "ycmd --rebuild [ymake] - wyczysc i przebuduj" << endl;
     cout << "ycmd --run [ymake] - uruchom z pliku ymake" << endl;
     cout << "ycmd --version++ [version.h] - zwieksz numer wersji w pliku" << endl;
     cout << "ycmd --init - utworz plik ymake oraz plik wersji version.h" << endl;

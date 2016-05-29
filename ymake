@@ -3,9 +3,9 @@ COMPILER = g++
 
 SRC_PATH = src
 
-SRC = *.cpp ymake/ymake.cpp ymake/ymake_data_source.cpp 
+SRC = *.cpp
 
-HEADERS = *.h -version.h ymake/ymake.h ymake/ymake_data_source.h
+HEADERS = *.h -version.h
 
 OUTPUT = ycmd
 
