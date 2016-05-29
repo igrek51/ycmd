@@ -1,5 +1,3 @@
-* w SRC z obsługą podkatalogów: src/*.cpp (lub wchodzenie rekurencyjnie wgłąb folderów)
-
 lista plików zasobów zamiast pojedynczego pliku
 
 

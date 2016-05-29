@@ -54,8 +54,7 @@ bool ymake_analyze_srcs(YmakeDataSource* ds, bool& rebuild, bool& change, vector
             do {
                 stringstream ss;
                 //nowa nazwa z kolejnym suffixem
-                ss<<Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(srcs->at(i))));
-                ss<<"_"<<suffix<<".o";
+                ss<<Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(srcs->at(i))))<<"_"<<suffix<<".o";
                 file_src_obj = ss.str();
                 suffix++;
             }while(contains(objs, file_src_obj));

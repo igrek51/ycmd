@@ -50,10 +50,16 @@ vector<string> *YmakeDataSource::getSources() {
     if (srcs->size() == 0) {
         Log::error("Lista plikow zrodlowych jest pusta");
     }
+    for(string src : *srcs){
+        Log::debug("plik źródłowy: " + src);
+    }
     return srcs;
 }
 
 vector<string> *YmakeDataSource::getHeaders() {
     vector<string> *headersList = get_list_ex(headers, src_path);
+    for(string header : *headersList){
+        Log::debug("plik nagłówkowy: " + header);
+    }
     return headersList;
 }

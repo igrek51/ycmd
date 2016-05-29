@@ -102,7 +102,7 @@ vector<string> *get_list_ex(string lista, string dir) {
             string ext = kontener->at(i).substr(1, kontener->at(i).length() - 1);
             //zastąp ten element pasującymi plikami z folderu
             kontener->erase(kontener->begin() + i);
-            vector<string> *pliki = get_files_from_dir(dir, ext);
+            vector<string> *pliki = get_files_from_dir_recursively(dir, ext);
             for (unsigned j = 0; j < pliki->size(); j++) {
                 add_to_set(kontener, Path::reformat(pliki->at(j)));
             }
@@ -125,6 +125,7 @@ vector<string> *get_list_ex(string lista, string dir) {
     return kontener;
 }
 
+//TODO użyć kontenera set z STL
 void add_to_set(vector<string> *kontener, string elem) {
     //jeśli już istnieje
     for (unsigned int i = 0; i < kontener->size(); i++) {

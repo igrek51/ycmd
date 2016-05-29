@@ -174,6 +174,45 @@ vector<string>* get_dirs_from_dir(string dirStr) {
     return dirs;
 }
 
+vector<string>* get_files_from_dir_recursively(string dirStr, string ext) {
+    if (ext == "*")
+        ext = "";
+    if (dirStr.length() == 0)
+        dirStr = ".";
+    if (!dir_exists(dirStr)) {
+        Log::error("brak folderu: " + dirStr);
+        return NULL;
+    }
+    DIR* d;
+    struct dirent* dir;
+    d = opendir(dirStr.c_str());
+    if (!d) {
+        Log::error("blad otwierania folderu " + dirStr);
+        return NULL;
+    }
+    vector<string>* files = new vector<string>;
+    while ((dir = readdir(d)) != NULL) {
+        char* name = dir->d_name;
+        if (strcmp(name, ".") == 0) continue;
+        if (strcmp(name, "..") == 0) continue;
+        if (dir->d_type == DT_REG) { //plik
+            if (ends_with(name, ext)) {
+                files->push_back(name);
+            }
+        }
+        if (dir->d_type == DT_DIR) { //folder
+            //rekursywne wejście wgłąb
+            vector<string>* subfolderFiles = get_files_from_dir_recursively(Path::append(dirStr, name), ext);
+            for(string subfile : *subfolderFiles){
+                files->push_back(Path::append(name, subfile));
+            }
+            delete subfolderFiles;
+        }
+    }
+    closedir(d);
+    return files;
+}
+
 bool mkdir_if_n_exist(string dir) {
     if (!dir_exists(dir)) {
         if (system2("mkdir " + dir)) {
