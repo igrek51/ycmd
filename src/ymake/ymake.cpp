@@ -4,6 +4,7 @@
 #include "../args.h"
 #include "../system.h"
 #include "../path.h"
+#include "../string_utils.h"
 
 #include <fstream>
 #include <sstream>
@@ -49,15 +50,17 @@ bool ymake_analyze_srcs(YmakeDataSource* ds, bool& rebuild, bool& change, vector
                 Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(srcs->at(i)))) +
                 ".o";
         //jeśli został już dodany taki plik obj
-        if(contains(objs, file_src_obj)){
+        if (contains(objs, file_src_obj)) {
             int suffix = 1;
             do {
                 stringstream ss;
                 //nowa nazwa z kolejnym suffixem
-                ss<<Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(srcs->at(i))))<<"_"<<suffix<<".o";
+                ss <<
+                Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(srcs->at(i)))) <<
+                "_" << suffix << ".o";
                 file_src_obj = ss.str();
                 suffix++;
-            }while(contains(objs, file_src_obj));
+            } while (contains(objs, file_src_obj));
         }
         objs->push_back(file_src_obj);
         if (!file_exists(file_src)) {
@@ -69,17 +72,22 @@ bool ymake_analyze_srcs(YmakeDataSource* ds, bool& rebuild, bool& change, vector
             if (file_exists(file_src_obj)) {
                 if (files_equal(file_src, file_src_prv)) {
                     continue;
-                }else{
+                } else {
                     Log::debug("Zmodyfikowany plik: " + file_src);
                 }
             }
             change = true;
         }
         //kompilacja zmienionych plików
-        stringstream ss;
+        stringstream ss, ss2;
         ss << ds->compiler << " -c -o \"" << file_src_obj << "\" \"" << file_src << "\"";
         if (ds->compiler_flags.length() > 0) ss << " " << ds->compiler_flags;
-        Log::info("Kompilacja " + file_src + ": " + ss.str());
+        ss2 << "Kompilacja ";
+        if (rebuild) {
+            ss2 << "(" << (i + 1) << "/" << srcs->size() << ") ";
+        }
+        ss2 << file_src << ": " << ss.str();
+        Log::info(ss2.str());
         if (!system2(ss.str())) {
             Log::error("blad kompilacji pliku: " + file_src);
             delete srcs;
@@ -154,6 +162,7 @@ bool ymake_version_increment(YmakeDataSource* ds) {
 
 bool ymake(string ymake_filename) {
     Log::info("ymake v" + IO::version + ":");
+    time_t startTime = time(0);
 
     YmakeDataSource* ds = new YmakeDataSource(ymake_filename);
     if (Log::isError() || !ds->validate()) return false;
@@ -180,7 +189,8 @@ bool ymake(string ymake_filename) {
         if (!ymake_version_increment(ds)) return false;
         //linkowanie
         if (!ymake_linker_build(ds, objs)) return false;
-        Log::info("Zakonczono budowanie.");
+        Log::info("Zakonczono budowanie, czas budowania: " +
+                  time_interval_string(time(0) - startTime) + ".");
     } else {
         Log::info("Brak zmian do wprowadzenia.");
     }
@@ -412,10 +422,10 @@ bool ymake_init() {
     return true;
 }
 
-bool contains(vector<string>* container, string searchStr){
-    if(container == nullptr) return false;
-    for(string aStr : *container){
-        if(aStr == searchStr){
+bool contains(vector<string>* container, string searchStr) {
+    if (container == nullptr) return false;
+    for (string aStr : *container) {
+        if (aStr == searchStr) {
             return true;
         }
     }

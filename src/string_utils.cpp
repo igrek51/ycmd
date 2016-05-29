@@ -1,3 +1,4 @@
+#include <sstream>
 #include "string_utils.h"
 
 string trim_spaces(string s) {
@@ -64,4 +65,18 @@ string replaceStr(string str, char find, char replaceTo) {
         if (str[i] == find) str[i] = replaceTo;
     }
     return str;
+}
+
+string time_interval_string(time_t interval_s){
+    long long sec = interval_s % 60;
+    long long min = interval_s / 60;
+    stringstream ss;
+    if(min > 0){
+        ss<<min<<" min ";
+        if(sec<10){
+            ss<<"0";
+        }
+    }
+    ss<<sec<<" s";
+    return ss.str();
 }
