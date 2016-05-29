@@ -1,6 +1,5 @@
 * w SRC z obsługą podkatalogów: src/*.cpp (lub wchodzenie rekurencyjnie wgłąb folderów)
 
-zabezpieczenie przed powtarzającymi się nazwami obj (warn przy dodawaniu do listy objs)
 lista plików zasobów zamiast pojedynczego pliku
 
 
@@ -8,3 +7,6 @@ systemowe funkcje do osobnego modułu (mkdir, list dir, system, shellexecute)
 2 gałęzie: windows, linux, master (cross-platform)
 
 błędy przekazywane wyjątkami
+
+własne kroki budowania
+

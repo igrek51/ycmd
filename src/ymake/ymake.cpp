@@ -48,6 +48,18 @@ bool ymake_analyze_srcs(YmakeDataSource* ds, bool& rebuild, bool& change, vector
         string file_src_obj =
                 Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(srcs->at(i)))) +
                 ".o";
+        //jeśli został już dodany taki plik obj
+        if(contains(objs, file_src_obj)){
+            int suffix = 1;
+            do {
+                stringstream ss;
+                //nowa nazwa z kolejnym suffixem
+                ss<<Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(srcs->at(i))));
+                ss<<"_"<<suffix<<".o";
+                file_src_obj = ss.str();
+                suffix++;
+            }while(contains(objs, file_src_obj));
+        }
         objs->push_back(file_src_obj);
         if (!file_exists(file_src)) {
             Log::error("brak pliku zrodlowego " + file_src);
@@ -399,4 +411,14 @@ bool ymake_init() {
     plik.close();
     Log::info("Utworzono nowy plik ymake.");
     return true;
+}
+
+bool contains(vector<string>* container, string searchStr){
+    if(container == nullptr) return false;
+    for(string aStr : *container){
+        if(aStr == searchStr){
+            return true;
+        }
+    }
+    return false;
 }

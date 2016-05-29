@@ -30,4 +30,6 @@ bool clean_dir(string dir);
 
 bool ymake_init();
 
+bool contains(vector<string>* container, string searchStr);
+
 #endif
