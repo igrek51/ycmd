@@ -300,14 +300,17 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename) {
     output << "\t$(CC) $(OBJS) $(LIBS) $(LFLAGS) -o $(BIN)/$(OUTPUT_NAME)" << endl << endl;
     //target clean
     output << "clean:" << endl;
-    output << "\tdel /Q obj\\*.o" << endl;
-    output << "\tdel /Q $(BIN)\\$(OUTPUT_NAME)" << endl << endl << endl;
+    output << "\trm obj/*.o" << endl;
+    output << "\trm $(BIN)/$(OUTPUT_NAME)" << endl << endl << endl;
     //pojedyncze pliki .o
     for (unsigned int i = 0; i < srcs->size(); i++) {
         string file_src = Path::append(ymake->src_path, srcs->at(i));
-        string file_src_obj = Path::append("obj", Path::removeExtenstion(srcs->at(i))) + ".o";
-        output << file_src_obj << ": " << file_src << endl;
-        output << "\t$(CC) $(CFLAGS) " << file_src << " -o \"" << file_src_obj << "\"" << endl <<
+        string file_src_obj =
+                Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(srcs->at(i)))) +
+                ".o";
+        output << "\"" << file_src_obj << "\":"<<endl; // \"" << file_src << "\"" << endl;
+        output << "\t$(CC) $(CFLAGS) \"" << file_src << "\" -o \"" << file_src_obj << "\"" <<
+        endl <<
         endl;
     }
     if (ymake->resource.length() > 0) {
