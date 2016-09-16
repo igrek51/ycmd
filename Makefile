@@ -1,53 +1,56 @@
 BIN = bin
-CC = C:\MinGW\bin\mingw32-g++.exe
-CFLAGS = -c -Wall
+CC = g++
+CFLAGS = -c -Wall -std=c++11
 LFLAGS = -Wall -s
 LIBS = 
-OUTPUT_NAME = ycmd.exe
-OBJS = obj\commands.o obj\files.o obj\io.o obj\log.o obj\main.o obj\path.o obj\string_utils.o obj\system.o obj\variables.o obj\versioning.o obj\ymake.o obj\ymake_data.o
+OUTPUT_NAME = ycmd
+OBJS = "obj/args.o" "obj/commands.o" "obj/files.o" "obj/input.o" "obj/log.o" "obj/main.o" "obj/path.o" "obj/string_utils.o" "obj/system.o" "obj/variables.o" "obj/version_increment.o" "obj/ymake_ymake.o" "obj/ymake_ymake_data_source.o"
 
 
 all: $(OBJS)
 	$(CC) $(OBJS) $(LIBS) $(LFLAGS) -o $(BIN)/$(OUTPUT_NAME)
 
 clean:
-	del /Q obj\*.o
-	del /Q $(BIN)\$(OUTPUT_NAME)
+	rm obj/*.o
+	rm $(BIN)/$(OUTPUT_NAME)
 
 
-obj\commands.o: src\commands.cpp
-	$(CC) $(CFLAGS) src\commands.cpp -o "obj\commands.o"
+"obj/args.o":
+	$(CC) $(CFLAGS) "src/args.cpp" -o "obj/args.o"
 
-obj\files.o: src\files.cpp
-	$(CC) $(CFLAGS) src\files.cpp -o "obj\files.o"
+"obj/commands.o":
+	$(CC) $(CFLAGS) "src/commands.cpp" -o "obj/commands.o"
 
-obj\io.o: src\io.cpp
-	$(CC) $(CFLAGS) src\io.cpp -o "obj\io.o"
+"obj/files.o":
+	$(CC) $(CFLAGS) "src/files.cpp" -o "obj/files.o"
 
-obj\log.o: src\log.cpp
-	$(CC) $(CFLAGS) src\log.cpp -o "obj\log.o"
+"obj/input.o":
+	$(CC) $(CFLAGS) "src/input.cpp" -o "obj/input.o"
 
-obj\main.o: src\main.cpp
-	$(CC) $(CFLAGS) src\main.cpp -o "obj\main.o"
+"obj/log.o":
+	$(CC) $(CFLAGS) "src/log.cpp" -o "obj/log.o"
 
-obj\path.o: src\path.cpp
-	$(CC) $(CFLAGS) src\path.cpp -o "obj\path.o"
+"obj/main.o":
+	$(CC) $(CFLAGS) "src/main.cpp" -o "obj/main.o"
 
-obj\string_utils.o: src\string_utils.cpp
-	$(CC) $(CFLAGS) src\string_utils.cpp -o "obj\string_utils.o"
+"obj/path.o":
+	$(CC) $(CFLAGS) "src/path.cpp" -o "obj/path.o"
 
-obj\system.o: src\system.cpp
-	$(CC) $(CFLAGS) src\system.cpp -o "obj\system.o"
+"obj/string_utils.o":
+	$(CC) $(CFLAGS) "src/string_utils.cpp" -o "obj/string_utils.o"
 
-obj\variables.o: src\variables.cpp
-	$(CC) $(CFLAGS) src\variables.cpp -o "obj\variables.o"
+"obj/system.o":
+	$(CC) $(CFLAGS) "src/system.cpp" -o "obj/system.o"
 
-obj\versioning.o: src\versioning.cpp
-	$(CC) $(CFLAGS) src\versioning.cpp -o "obj\versioning.o"
+"obj/variables.o":
+	$(CC) $(CFLAGS) "src/variables.cpp" -o "obj/variables.o"
 
-obj\ymake.o: src\ymake.cpp
-	$(CC) $(CFLAGS) src\ymake.cpp -o "obj\ymake.o"
+"obj/version_increment.o":
+	$(CC) $(CFLAGS) "src/version_increment.cpp" -o "obj/version_increment.o"
 
-obj\ymake_data.o: src\ymake_data.cpp
-	$(CC) $(CFLAGS) src\ymake_data.cpp -o "obj\ymake_data.o"
+"obj/ymake_ymake.o":
+	$(CC) $(CFLAGS) "src/ymake/ymake.cpp" -o "obj/ymake_ymake.o"
+
+"obj/ymake_ymake_data_source.o":
+	$(CC) $(CFLAGS) "src/ymake/ymake_data_source.cpp" -o "obj/ymake_ymake_data_source.o"
 

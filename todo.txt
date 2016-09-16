@@ -1,10 +1,10 @@
-* w SRC z obs³ug¹ podkatalogów: src/*.cpp (lub wchodzenie rekurencyjnie wg³¹b folderów)
-
-zabezpieczenie przed powtarzaj¹cymi siê nazwami obj (warn przy dodawaniu do listy objs)
-lista plików zasobów zamiast pojedynczego pliku
+lista plikÃ³w zasobÃ³w zamiast pojedynczego pliku
 
 
-systemowe funkcje do osobnego modu³u (mkdir, list dir, system, shellexecute)
-2 ga³êzie: windows, linux, master (cross-platform)
+systemowe funkcje do osobnego moduÅ‚u (mkdir, list dir, system, shellexecute)
+2 gaÅ‚Ä™zie: windows, linux, master (cross-platform)
 
-b³êdy przekazywane wyj¹tkami
+bÅ‚Ä™dy przekazywane wyjÄ…tkami
+
+wÅ‚asne kroki budowania
+

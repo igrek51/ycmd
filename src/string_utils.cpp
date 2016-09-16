@@ -1,3 +1,4 @@
+#include <sstream>
 #include "string_utils.h"
 
 string trim_spaces(string s) {
@@ -37,11 +38,11 @@ vector<string>* get_param_list(string lista) {
         if (lista[i] == '\"') cudzyslow = !cudzyslow;
         if (lista[i] == ',' && !cudzyslow) lista[i] = ' ';
         if (lista[i] == ' ' && !cudzyslow && i > 0) {
-            newStr = trim_spaces(lista.substr(0, i));
+            newStr = trim_spaces(lista.substr(0, (unsigned int) i));
             if(newStr.length() > 0) {
                 kontener->push_back(newStr);
             }
-            lista = lista.substr(i + 1);
+            lista = lista.substr((unsigned int) (i + 1));
             i = -1;
         }
     }
@@ -55,8 +56,7 @@ bool ends_with(string name, string ext) {
     if (ext.length() == 0) return true;
     if (ext.length() > name.length()) return false;
     name = name.substr(name.length() - ext.length(), ext.length());
-    if (name == ext) return true;
-    return false;
+    return name == ext;
 }
 
 
@@ -65,4 +65,18 @@ string replaceStr(string str, char find, char replaceTo) {
         if (str[i] == find) str[i] = replaceTo;
     }
     return str;
+}
+
+string time_interval_string(time_t interval_s){
+    long long sec = interval_s % 60;
+    long long min = interval_s / 60;
+    stringstream ss;
+    if(min > 0){
+        ss<<min<<" min ";
+        if(sec<10){
+            ss<<"0";
+        }
+    }
+    ss<<sec<<" s";
+    return ss.str();
 }

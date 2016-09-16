@@ -16,4 +16,6 @@ bool ends_with(string name, string ext);
 
 string replaceStr(string str, char find, char replaceTo);
 
+string time_interval_string(time_t interval_s);
+
 #endif

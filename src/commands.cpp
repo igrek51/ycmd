@@ -47,7 +47,7 @@ bool exec_commands(vector<string> *args) {
     //POLECENIA
     if (next_arg_number("-e", args, next) ||
         next_arg_number("--exec", args, next)) { //wykonaj polecenia z parametrów
-        for (unsigned int i = next; i < args->size(); i++) {
+        for (unsigned int i = (unsigned int) next; i < args->size(); i++) {
             if (!system_echo(args->at(i)))
                 return false; //przerwij łancuch w przypadku błędu
         }
@@ -55,7 +55,7 @@ bool exec_commands(vector<string> *args) {
                next_arg_number("--e1", args, next)) { //wykonaj jako 1 polecenie
         //złożenie argumentów w jedno polecenie
         stringstream ss;
-        for (unsigned int i = next; i < args->size(); i++) {
+        for (unsigned int i = (unsigned int) next; i < args->size(); i++) {
             ss << args->at(i);
             if (i < args->size() - 1) ss << " ";
         }
@@ -83,9 +83,9 @@ bool exec_commands(vector<string> *args) {
                next_arg("--ymake", args, next1, "ymake")) { //skompiluj
         if (!ymake(next1))
             return false;
-    } else if (next_arg2("--ymake-bat", args, next1, next2, "ymake",
-                         "build.bat")) { //generuj plik .bat
-        if (!ymake_generate_bat(next1, next2))
+    } else if (next_arg2("--ymake-bash", args, next1, next2, "ymake",
+                         "build.sh")) { //generuj plik bash
+        if (!ymake_generate_bash(next1, next2))
             return false;
     } else if (next_arg2("--ymake-makefile", args, next1, next2, "ymake",
                          "Makefile")) { //generuj plik makefile
@@ -93,18 +93,6 @@ bool exec_commands(vector<string> *args) {
             return false;
     } else if (next_arg("--run", args, next1, "ymake")) { //uruchom aplikację z ymake
         if (!run_from_ymake(next1, 1)) {
-            Log::error("blad uruchamiania z pliku: " + next1);
-            return false;
-        }
-    } else if (next_arg("--run-start", args, next1,
-                        "ymake")) { //uruchom aplikację z ymake (z poleceniem start)
-        if (!run_from_ymake(next1, 2)) {
-            Log::error("blad uruchamiania z pliku: " + next1);
-            return false;
-        }
-    } else if (next_arg("--run-shell", args, next1,
-                        "ymake")) { //uruchom aplikację przez shellexecute
-        if (!run_from_ymake(next1, 3)) {
             Log::error("blad uruchamiania z pliku: " + next1);
             return false;
         }
@@ -120,6 +108,11 @@ bool exec_commands(vector<string> *args) {
         return input_cmd();
     } else if (is_arg("--clean", args)) { //wyczysc folder prv
         return clean_all();
+    } else if (next_arg("--rebuild", args, next1, "ymake")) { //przebuduj
+        if(!clean_all())
+            return false;
+        if (!ymake(next1))
+            return false;
     } else if (next_arg("--version++", args, next1, "version.h")) { //zwiększ wersję w pliku
         return version_increment(Path::reformat(next1));
     } else if (is_arg("--test", args)) {
@@ -132,13 +125,13 @@ bool exec_commands(vector<string> *args) {
 }
 
 void show_help() {
-    cout << "ycmd v " << IO::version << endl << endl;
+    cout << "ycmd v " << IO::version << " (linux)" << endl << endl;
     cout << "Polecenia:" << endl;
     cout << "ycmd -e(--exec) [polecenie1] [polecenie2] [...] - wykonaj polecenia" << endl;
     cout << "ycmd -1(--e1) [po le ce nie] - wykonaj jako jedno polecenie" << endl;
     cout << "ycmd -f(--file) [plik] - wykonaj wiersze z pliku (przerwij w przypadku bledu)" << endl;
     cout << "ycmd -y(--ymake) [ymake] - zbuduj na podstawie pliku ymake" << endl;
-    cout << "ycmd --ymake-bat [ymake] [build.bat] - utworz plik .bat na podstawie pliku ymake" <<
+    cout << "ycmd --ymake-bash [ymake] [build.sh] - utworz plik .sh na podstawie pliku ymake" <<
     endl;
     cout <<
     "ycmd --ymake-makefile [ymake] [Makefile] - utworz plik Makefile na podstawie pliku ymake" <<
@@ -146,9 +139,8 @@ void show_help() {
     cout << "ycmd -t(--time) [polecenie] - zmierz czas wykonania polecenia" << endl;
     cout << "ycmd -i(--input) - czekaj na wpisanie polecenia" << endl;
     cout << "ycmd --clean - wyczysc folder prv i obj" << endl;
+    cout << "ycmd --rebuild [ymake] - wyczysc i przebuduj" << endl;
     cout << "ycmd --run [ymake] - uruchom z pliku ymake" << endl;
-    cout << "ycmd --run-start [ymake] - uruchom poleceniem start z pliku ymake" << endl;
-    cout << "ycmd --run-shell [ymake] - uruchom poleceniem ShellExecute z pliku ymake" << endl;
     cout << "ycmd --version++ [version.h] - zwieksz numer wersji w pliku" << endl;
     cout << "ycmd --init - utworz plik ymake oraz plik wersji version.h" << endl;
     cout << "ycmd --init-ymake - utworz plik ymake" << endl;

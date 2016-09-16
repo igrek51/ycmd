@@ -4,12 +4,12 @@
 #include "../args.h"
 #include "../system.h"
 #include "../path.h"
+#include "../string_utils.h"
 
 #include <fstream>
 #include <sstream>
-#include <windows.h>
 
-bool ymake_analyze_headers(YmakeDataSource* ds, bool& rebuild) {
+bool ymake_analyze_headers(YmakeDataSource* ds, bool& rebuild, bool& change) {
     vector<string>* headers = ds->getHeaders();
     for (unsigned int i = 0; i < headers->size(); i++) {
         string file_header = Path::append(ds->src_path, headers->at(i));
@@ -24,6 +24,7 @@ bool ymake_analyze_headers(YmakeDataSource* ds, bool& rebuild) {
         //przebudowa całego projektu
         Log::debug("Zmodyfikowany plik naglowkowy: " + file_header);
         rebuild = true;
+        change = true;
         //skopiowanie nowej wersji z nadpisaniem
         if (!mkdir_overwrite_file(file_header, file_header_prv)) {
             Log::error("blad kopiowania do pliku " + file_header_prv);
@@ -35,7 +36,7 @@ bool ymake_analyze_headers(YmakeDataSource* ds, bool& rebuild) {
     return true;
 }
 
-bool ymake_analyze_srcs(YmakeDataSource* ds, bool& rebuild, vector<string>* objs) {
+bool ymake_analyze_srcs(YmakeDataSource* ds, bool& rebuild, bool& change, vector<string>* objs) {
     vector<string>* srcs = ds->getSources();
     if (srcs->size() == 0) {
         delete srcs;
@@ -48,6 +49,19 @@ bool ymake_analyze_srcs(YmakeDataSource* ds, bool& rebuild, vector<string>* objs
         string file_src_obj =
                 Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(srcs->at(i)))) +
                 ".o";
+        //jeśli został już dodany taki plik obj
+        if (contains(objs, file_src_obj)) {
+            int suffix = 1;
+            do {
+                stringstream ss;
+                //nowa nazwa z kolejnym suffixem
+                ss <<
+                Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(srcs->at(i)))) <<
+                "_" << suffix << ".o";
+                file_src_obj = ss.str();
+                suffix++;
+            } while (contains(objs, file_src_obj));
+        }
         objs->push_back(file_src_obj);
         if (!file_exists(file_src)) {
             Log::error("brak pliku zrodlowego " + file_src);
@@ -58,15 +72,22 @@ bool ymake_analyze_srcs(YmakeDataSource* ds, bool& rebuild, vector<string>* objs
             if (file_exists(file_src_obj)) {
                 if (files_equal(file_src, file_src_prv)) {
                     continue;
+                } else {
+                    Log::debug("Zmodyfikowany plik: " + file_src);
                 }
             }
-            rebuild = true;
+            change = true;
         }
         //kompilacja zmienionych plików
-        stringstream ss;
+        stringstream ss, ss2;
         ss << ds->compiler << " -c -o \"" << file_src_obj << "\" \"" << file_src << "\"";
         if (ds->compiler_flags.length() > 0) ss << " " << ds->compiler_flags;
-        Log::info("Kompilacja " + file_src + ": " + ss.str());
+        ss2 << "Kompilacja ";
+        if (rebuild) {
+            ss2 << "(" << (i + 1) << "/" << srcs->size() << ") ";
+        }
+        ss2 << file_src << ": " << ss.str();
+        Log::info(ss2.str());
         if (!system2(ss.str())) {
             Log::error("blad kompilacji pliku: " + file_src);
             delete srcs;
@@ -83,7 +104,7 @@ bool ymake_analyze_srcs(YmakeDataSource* ds, bool& rebuild, vector<string>* objs
     return true;
 }
 
-bool ymake_analyze_resources(YmakeDataSource* ds, bool& rebuild, vector<string>* objs) {
+bool ymake_analyze_resources(YmakeDataSource* ds, bool& change, vector<string>* objs) {
     if (ds->resource.length() > 0) {
         if (!file_exists(ds->resource)) {
             Log::error("brak pliku zasobow: " + ds->resource);
@@ -96,8 +117,9 @@ bool ymake_analyze_resources(YmakeDataSource* ds, bool& rebuild, vector<string>*
                 ".o";
         objs->push_back(resource_obj);
         if (!files_equal(ds->resource, resource_prv) || !file_exists(resource_obj)) {
-            rebuild = true;
+            change = true;
             Log::info("Dodawanie zasobow: " + ds->resource);
+            //TODO tworzenie zasobów w linuxie
             if (!system2("windres \"" + ds->resource + "\" \"" + resource_obj + "\""))
                 return false;
             if (!mkdir_overwrite_file(ds->resource, resource_prv)) {
@@ -140,35 +162,35 @@ bool ymake_version_increment(YmakeDataSource* ds) {
 
 bool ymake(string ymake_filename) {
     Log::info("ymake v" + IO::version + ":");
+    time_t startTime = time(0);
 
     YmakeDataSource* ds = new YmakeDataSource(ymake_filename);
     if (Log::isError() || !ds->validate()) return false;
-
-    //dodanie ścieżki kompilatora do zmiennej środowiskowej PATH
-    add_env_path(ds->compiler_path);
 
     mkdir_if_n_exist("prv");
     mkdir_if_n_exist("obj");
 
     //znalezienie zmienionych plików nagłówkowych
     bool rebuild = false;
-    if (!ymake_analyze_headers(ds, rebuild)) return false;
+    bool change = false;
+    if (!ymake_analyze_headers(ds, rebuild, change)) return false;
     if (rebuild) {
         Log::info("Przebudowywanie...");
     }
 
     vector<string>* objs = new vector<string>();
-    if (!ymake_analyze_srcs(ds, rebuild, objs)) return false;
-    if (!ymake_analyze_resources(ds, rebuild, objs)) return false;
+    if (!ymake_analyze_srcs(ds, rebuild, change, objs)) return false;
+    if (!ymake_analyze_resources(ds, change, objs)) return false;
 
     //budowanie
     mkdir_if_n_exist("bin");
-    if (rebuild) {
+    if (rebuild || change) {
         //inkrementacja wersji
         if (!ymake_version_increment(ds)) return false;
         //linkowanie
         if (!ymake_linker_build(ds, objs)) return false;
-        Log::info("Zakonczono budowanie.");
+        Log::info("Zakonczono budowanie, czas budowania: " +
+                  time_interval_string(time(0) - startTime) + ".");
     } else {
         Log::info("Brak zmian do wprowadzenia.");
     }
@@ -177,7 +199,7 @@ bool ymake(string ymake_filename) {
     return true;
 }
 
-bool ymake_generate_bat(string ymake_filename, string output_filename) {
+bool ymake_generate_bash(string ymake_filename, string output_filename) {
     output_filename = Path::reformat(output_filename);
     stringstream output;
     YmakeDataSource* ymake = new YmakeDataSource(ymake_filename);
@@ -187,8 +209,6 @@ bool ymake_generate_bat(string ymake_filename, string output_filename) {
     vector<string>* srcs = ymake->getSources();
     if (srcs->size() == 0) return false;
 
-    //dodanie ścieżki kompilatora do zmiennej środowiskowej PATH
-    output << "set PATH=%PATH%;" << ymake->compiler_path << endl;
     //utworzenie folderów
     output << "mkdir obj" << endl;
     output << "mkdir bin" << endl;
@@ -206,6 +226,7 @@ bool ymake_generate_bat(string ymake_filename, string output_filename) {
     }
     //Zasoby
     if (ymake->resource.length() > 0) {
+        //TODO tworzenie zasobów w linuxie
         string resource_obj = Path::append("obj", Path::formatUnderscore(
                 Path::removeExtenstion(ymake->resource))) + ".o";
         output << "windres \"" << ymake->resource << "\" \"" << resource_obj << "\"" << endl;
@@ -248,13 +269,14 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename) {
     if (srcs->size() == 0) return false;
 
     //plik Makefile
-    string ymake_path_cc = Path::append(ymake->compiler_path, "mingw32-g++.exe");
     output << "BIN = bin" << endl;
-    output << "CC = " << ymake_path_cc << endl;
+    //TODO testy
+    output << "CC = g++" << endl;
     //kompilacja zasobów
     if (ymake->resource.length() > 0) {
-        string ymake_path_windres = Path::append(ymake->compiler_path, "windres.exe");
-        output << "WINDRES = " << ymake_path_windres << endl;
+        //TODO tworzenie zasobów w linuxie
+        //string ymake_path_windres = Path::append(ymake->compiler_path, "windres.exe");
+        //output << "WINDRES = " << ymake_path_windres << endl;
     }
     output << "CFLAGS = -c " << ymake->compiler_flags << endl;
     output << "LFLAGS = " << ymake->linker_flags << endl;
@@ -278,21 +300,24 @@ bool ymake_generate_makefile(string ymake_filename, string output_filename) {
     output << "\t$(CC) $(OBJS) $(LIBS) $(LFLAGS) -o $(BIN)/$(OUTPUT_NAME)" << endl << endl;
     //target clean
     output << "clean:" << endl;
-    output << "\tdel /Q obj\\*.o" << endl;
-    output << "\tdel /Q $(BIN)\\$(OUTPUT_NAME)" << endl << endl << endl;
+    output << "\trm obj/*.o" << endl;
+    output << "\trm $(BIN)/$(OUTPUT_NAME)" << endl << endl << endl;
     //pojedyncze pliki .o
     for (unsigned int i = 0; i < srcs->size(); i++) {
         string file_src = Path::append(ymake->src_path, srcs->at(i));
-        string file_src_obj = Path::append("obj", Path::removeExtenstion(srcs->at(i))) + ".o";
-        output << file_src_obj << ": " << file_src << endl;
-        output << "\t$(CC) $(CFLAGS) " << file_src << " -o \"" << file_src_obj << "\"" << endl <<
+        string file_src_obj =
+                Path::append("obj", Path::formatUnderscore(Path::removeExtenstion(srcs->at(i)))) +
+                ".o";
+        output << "\"" << file_src_obj << "\":"<<endl; // \"" << file_src << "\"" << endl;
+        output << "\t$(CC) $(CFLAGS) \"" << file_src << "\" -o \"" << file_src_obj << "\"" <<
+        endl <<
         endl;
     }
     if (ymake->resource.length() > 0) {
-        string resource_obj = Path::append("obj", Path::removeExtenstion(ymake->resource)) + ".o";
-        output << resource_obj << ": " << ymake->resource << endl;
-        output << "\t$(WINDRES) " << ymake->resource << " \"" << resource_obj << "\"" << endl <<
-        endl;
+//        string resource_obj = Path::append("obj", Path::removeExtenstion(ymake->resource)) + ".o";
+//        output << resource_obj << ": " << ymake->resource << endl;
+//        output << "\t$(WINDRES) " << ymake->resource << " \"" << resource_obj << "\"" << endl <<
+//        endl;
     }
     delete srcs;
     //zapisanie do pliku wyjściowego
@@ -323,17 +348,6 @@ bool run_from_ymake(string ymake_filename, int mode) {
         ss << "\"" << ymake->output << "\"";
         Log::info("Uruchamianie: " + ss.str());
         return system2(ss.str());
-    } else if (mode == 2) { //run start
-        ss << "start \"\" \"" << ymake->output << "\"";
-        Log::info("Uruchamianie: " + ss.str());
-        return system2(ss.str());
-    } else if (mode == 3) { //shelexecute
-        if ((int) ShellExecute(0, "open", ymake->output.c_str(), "", 0, SW_SHOW) > 32) {
-            Log::info("Uruchomiono \"" + ymake->output + "\"...");
-            return true;
-        }
-        Log::error("Blad uruchamiania poleceniem ShellExecute: \"" + ymake->output + "\"");
-        return false;
     }
     return false;
 }
@@ -353,9 +367,9 @@ bool clean_dir(string dir) {
             }
         }
         //usunięcie plików w podkatalogach
-        vector<string> *dirs = get_dirs_from_dir(dir);
+        vector<string>* dirs = get_dirs_from_dir(dir);
         for (unsigned int i = 0; i < dirs->size(); i++) {
-            if(!clean_dir(Path::append(dir, dirs->at(i)))){
+            if (!clean_dir(Path::append(dir, dirs->at(i)))) {
                 Log::error("blad czyszczenia podkatalogu " + dirs->at(i));
                 return false;
             }
@@ -384,7 +398,6 @@ bool ymake_init() {
     plik << "# -- " << get_time_date() << " -- generated by ymake v" << IO::version << " --" <<
     endl;
     plik << "COMPILER = g++" << endl << endl;
-    plik << "COMPILER_PATH = C:/MinGW/bin" << endl << endl;
     plik << "#folder plików źródłowych i nagłówkowych (pusty - katalog roboczy)" << endl;
     plik << "SRC_PATH =" << endl << endl;
     plik <<
@@ -410,4 +423,14 @@ bool ymake_init() {
     plik.close();
     Log::info("Utworzono nowy plik ymake.");
     return true;
+}
+
+bool contains(vector<string>* container, string searchStr) {
+    if (container == nullptr) return false;
+    for (string aStr : *container) {
+        if (aStr == searchStr) {
+            return true;
+        }
+    }
+    return false;
 }

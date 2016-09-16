@@ -26,6 +26,8 @@ vector<string>* get_files_from_dir(string dir, string ext = "");
 
 vector<string>* get_dirs_from_dir(string dir);
 
+vector<string>* get_files_from_dir_recursively(string dir, string ext = "");
+
 bool mkdir_if_n_exist(string dir);
 
 bool mkdir_recursively(string dir);

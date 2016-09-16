@@ -5,25 +5,25 @@
 #include "path.h"
 
 #include <fstream>
-#include <windows.h>
+#include <sys/stat.h>
+#include <cstring>
+#include <dirent.h>
 
 bool file_exists(string filename) {
     fstream plik;
     plik.open(filename.c_str(), fstream::in | fstream::binary);
-    if (plik.good()) {
-        plik.close();
-        return true;
-    } else {
-        plik.close();
-        return false;
-    }
+    bool good = plik.good();
+    plik.close();
+    return good;
 }
 
 bool dir_exists(string name) {
-    if(name.length() == 0) name = ".";
-    DWORD ftyp = GetFileAttributesA(name.c_str());
-    if (ftyp == INVALID_FILE_ATTRIBUTES) return false;
-    if (ftyp & FILE_ATTRIBUTE_DIRECTORY) return true;
+    struct stat sb;
+    if (stat(name.c_str(), &sb) == 0) {
+        if (S_ISDIR(sb.st_mode)) {
+            return true;
+        }
+    }
     return false;
 }
 
@@ -35,10 +35,10 @@ bool files_equal(string file1, string file2) {
     //rozmiary plików
     plik1.open(file1.c_str(), fstream::in | fstream::binary);
     plik1.seekg(0, plik1.end);
-    unsigned int fsize1 = plik1.tellg();
+    unsigned int fsize1 = (unsigned int) plik1.tellg();
     plik2.open(file2.c_str(), fstream::in | fstream::binary);
     plik2.seekg(0, plik2.end);
-    unsigned int fsize2 = plik2.tellg();
+    unsigned int fsize2 = (unsigned int) plik2.tellg();
     if (fsize1 != fsize2) { //różne rozmiary
         plik1.close();
         plik2.close();
@@ -64,11 +64,18 @@ bool files_equal(string file1, string file2) {
 }
 
 bool copy_overwrite_file(string src, string file2) {
-    return CopyFile(src.c_str(), file2.c_str(), false);
+    ifstream source(src.c_str(), fstream::binary);
+    if (!source.good()) return false;
+    ofstream dest(file2.c_str(), fstream::trunc | fstream::binary);
+    if (!dest.good()) return false;
+    dest << source.rdbuf();
+    source.close();
+    dest.close();
+    return true;
 }
 
 bool delete_file(string filename) {
-    return DeleteFile(filename.c_str());
+    return remove(filename.c_str()) == 0;
 }
 
 
@@ -109,70 +116,109 @@ vector<string>* get_nonempty_lines(string filename) {
 }
 
 
-vector<string>* get_files_from_dir(string dir, string ext) {
+vector<string>* get_files_from_dir(string dirStr, string ext) {
     if (ext == "*")
         ext = "";
-    if (dir.length() == 0)
-        dir = ".";
-    if (!dir_exists(dir)) {
-        Log::error("brak folderu: " + dir);
+    if (dirStr.length() == 0)
+        dirStr = ".";
+    if (!dir_exists(dirStr)) {
+        Log::error("brak folderu: " + dirStr);
         return NULL;
     }
-    WIN32_FIND_DATAA ffd;
-    HANDLE hFind = FindFirstFileA((dir + "\\*").c_str(), &ffd);
-    if (hFind == INVALID_HANDLE_VALUE) {
-        Log::error("blad otwierania folderu " + dir);
+    DIR* d;
+    struct dirent* dir;
+    d = opendir(dirStr.c_str());
+    if (!d) {
+        Log::error("blad otwierania folderu " + dirStr);
         return NULL;
     }
     vector<string>* files = new vector<string>;
-    do {
-        const char* stemp = string(ffd.cFileName).c_str();
-        if (strcmp(stemp, ".") == 0) continue;
-        if (strcmp(stemp, "..") == 0) continue;
-        if (strcmp(stemp, "desktop.ini") == 0) continue;
-        if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) { //plik
-            if (ends_with(ffd.cFileName, ext)) {
-                files->push_back(ffd.cFileName);
+    while ((dir = readdir(d)) != NULL) {
+        char* name = dir->d_name;
+        if (strcmp(name, ".") == 0) continue;
+        if (strcmp(name, "..") == 0) continue;
+        if (dir->d_type == DT_REG) { //plik
+            if (ends_with(name, ext)) {
+                files->push_back(name);
             }
         }
-    } while (FindNextFileA(hFind, &ffd) != 0);
-    FindClose(hFind);
+    }
+    closedir(d);
     return files;
 }
 
-vector<string>* get_dirs_from_dir(string dir){
-    if (dir.length() == 0)
-        dir = ".";
-    if (!dir_exists(dir)) {
-        Log::error("brak folderu: " + dir);
+vector<string>* get_dirs_from_dir(string dirStr) {
+    if (dirStr.length() == 0)
+        dirStr = ".";
+    if (!dir_exists(dirStr)) {
+        Log::error("brak folderu: " + dirStr);
         return NULL;
     }
-    WIN32_FIND_DATAA ffd;
-    HANDLE hFind = FindFirstFileA((dir + "\\*").c_str(), &ffd);
-    if (hFind == INVALID_HANDLE_VALUE) {
-        Log::error("blad otwierania folderu " + dir);
+    DIR* d;
+    struct dirent* dir;
+    d = opendir(dirStr.c_str());
+    if (!d) {
+        Log::error("blad otwierania folderu " + dirStr);
         return NULL;
     }
     vector<string>* dirs = new vector<string>;
-    do {
-        const char* stemp = string(ffd.cFileName).c_str();
-        if (strcmp(stemp, ".") == 0) continue;
-        if (strcmp(stemp, "..") == 0) continue;
-        if (strcmp(stemp, "desktop.ini") == 0) continue;
-        if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) { //folder
-            dirs->push_back(ffd.cFileName);
+    while ((dir = readdir(d)) != NULL) {
+        char* name = dir->d_name;
+        if (strcmp(name, ".") == 0) continue;
+        if (strcmp(name, "..") == 0) continue;
+        if (dir->d_type == DT_DIR) { //folder
+            dirs->push_back(name);
         }
-    } while (FindNextFileA(hFind, &ffd) != 0);
-    FindClose(hFind);
+    }
+    closedir(d);
     return dirs;
+}
+
+vector<string>* get_files_from_dir_recursively(string dirStr, string ext) {
+    if (ext == "*")
+        ext = "";
+    if (dirStr.length() == 0)
+        dirStr = ".";
+    if (!dir_exists(dirStr)) {
+        Log::error("brak folderu: " + dirStr);
+        return NULL;
+    }
+    DIR* d;
+    struct dirent* dir;
+    d = opendir(dirStr.c_str());
+    if (!d) {
+        Log::error("blad otwierania folderu " + dirStr);
+        return NULL;
+    }
+    vector<string>* files = new vector<string>;
+    while ((dir = readdir(d)) != NULL) {
+        char* name = dir->d_name;
+        if (strcmp(name, ".") == 0) continue;
+        if (strcmp(name, "..") == 0) continue;
+        if (dir->d_type == DT_REG) { //plik
+            if (ends_with(name, ext)) {
+                files->push_back(name);
+            }
+        }
+        if (dir->d_type == DT_DIR) { //folder
+            //rekursywne wejście wgłąb
+            vector<string>* subfolderFiles = get_files_from_dir_recursively(Path::append(dirStr, name), ext);
+            for(string subfile : *subfolderFiles){
+                files->push_back(Path::append(name, subfile));
+            }
+            delete subfolderFiles;
+        }
+    }
+    closedir(d);
+    return files;
 }
 
 bool mkdir_if_n_exist(string dir) {
     if (!dir_exists(dir)) {
-        if(system2("mkdir " + dir)){
+        if (system2("mkdir " + dir)) {
             Log::debug("Utworzono katalog: " + dir);
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -184,24 +230,24 @@ bool mkdir_recursively(string dir) {
     Path* parentPath = new Path(dir);
     string parentDir = parentPath->parentDir()->getPath();
     delete parentPath;
-    if (parentDir.length() == 0){
+    if (parentDir.length() == 0) {
         return true;
     }
     if (dir_exists(parentDir)) {
         return mkdir_if_n_exist(dir);
     } else {
         bool result1 = mkdir_recursively(parentDir);
-        if(!result1) return false;
+        if (!result1) return false;
         return mkdir_if_n_exist(dir);
     }
 }
 
-bool mkdir_overwrite_file(string src, string file2){
+bool mkdir_overwrite_file(string src, string file2) {
     //stworzenie katalogu, jeśli nie istnieje
     Path* parentPath = new Path(file2);
     string dir = parentPath->parentDir()->getPath();
     delete parentPath;
-    if(dir.length() > 0) {
+    if (dir.length() > 0) {
         if (!mkdir_recursively(dir)) {
             Log::error("Blad tworzenia katalogu: " + dir);
             return false;

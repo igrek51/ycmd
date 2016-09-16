@@ -6,7 +6,7 @@ Path::Path(string path) {
 }
 
 string Path::getPath() {
-    return getWindowsPath();
+    return getUnixPath();
 }
 
 string Path::getUnixPath() {

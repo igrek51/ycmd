@@ -15,20 +15,20 @@ vector<string> *get_variables_lines(string filename) {
     vector<string> *lines = get_all_lines(filename);
     if (lines == NULL) return NULL;
     for (int i = 0; i < (int) lines->size(); i++) {
-        if (lines->at(i).length() == 0) { //usunięcie pustych elementów
+        if (lines->at((unsigned int) i).length() == 0) { //usunięcie pustych elementów
             lines->erase(lines->begin() + i);
             i--;
             continue;
         }
-        if (lines->at(i).length() >= 1) { //usunięcie komentarzy #
-            if (lines->at(i)[0] == '#') {
+        if (lines->at((unsigned int) i).length() >= 1) { //usunięcie komentarzy #
+            if (lines->at((unsigned int) i)[0] == '#') {
                 lines->erase(lines->begin() + i);
                 i--;
                 continue;
             }
         }
-        if (lines->at(i).length() >= 2) { //usunięcie komentarzy //
-            if (lines->at(i)[0] == '/' && lines->at(i)[1] == '/') {
+        if (lines->at((unsigned int) i).length() >= 2) { //usunięcie komentarzy //
+            if (lines->at((unsigned int) i)[0] == '/' && lines->at((unsigned int) i)[1] == '/') {
                 lines->erase(lines->begin() + i);
                 i--;
                 continue;
@@ -82,8 +82,7 @@ bool get_var_bool(vector<Variable *> *variables, string name, bool domyslny) {
     string s = get_var_string(variables, name);
     if (s.length() == 0) return domyslny;
     if (s == "true") return true;
-    if (s == "1") return true;
-    return false;
+    return s == "1";
 }
 
 
@@ -103,7 +102,7 @@ vector<string> *get_list_ex(string lista, string dir) {
             string ext = kontener->at(i).substr(1, kontener->at(i).length() - 1);
             //zastąp ten element pasującymi plikami z folderu
             kontener->erase(kontener->begin() + i);
-            vector<string> *pliki = get_files_from_dir(dir, ext);
+            vector<string> *pliki = get_files_from_dir_recursively(dir, ext);
             for (unsigned j = 0; j < pliki->size(); j++) {
                 add_to_set(kontener, Path::reformat(pliki->at(j)));
             }
@@ -113,8 +112,9 @@ vector<string> *get_list_ex(string lista, string dir) {
     }
     //odejmowanie elementów
     for (int i = 0; i < (int) kontener->size(); i++) {
-        if (kontener->at(i)[0] == '-') {
-            string elem_usun = kontener->at(i).substr(1, kontener->at(i).length() - 1);
+        if (kontener->at((unsigned int) i)[0] == '-') {
+            string elem_usun = kontener->at((unsigned int) i).substr(1, kontener->at(
+                    (unsigned int) i).length() - 1);
             //usuń ten element i wszystkie jego wystąpienia
             kontener->erase(kontener->begin() + i);
             remove_from_list(kontener, elem_usun);
@@ -125,6 +125,7 @@ vector<string> *get_list_ex(string lista, string dir) {
     return kontener;
 }
 
+//TODO użyć kontenera set z STL
 void add_to_set(vector<string> *kontener, string elem) {
     //jeśli już istnieje
     for (unsigned int i = 0; i < kontener->size(); i++) {
@@ -137,7 +138,7 @@ void add_to_set(vector<string> *kontener, string elem) {
 void remove_from_list(vector<string> *kontener, string elem) {
     //usuń wszystkie jego wystąpienia
     for (int j = 0; j < (int) kontener->size(); j++) {
-        if (kontener->at(j) == elem) {
+        if (kontener->at((unsigned int) j) == elem) {
             kontener->erase(kontener->begin() + j);
             j--;
         }
